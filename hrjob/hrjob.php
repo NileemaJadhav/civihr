@@ -1,7 +1,7 @@
 <?php
 /*
 +--------------------------------------------------------------------+
-| CiviHR version 1.0                                                 |
+| CiviHR version 1.2                                                 |
 +--------------------------------------------------------------------+
 | Copyright CiviCRM LLC (c) 2004-2013                                |
 +--------------------------------------------------------------------+
@@ -47,6 +47,59 @@ function hrjob_civicrm_xmlMenu(&$files) {
  * Implementation of hook_civicrm_install
  */
 function hrjob_civicrm_install() {
+  $cType = CRM_Contact_BAO_ContactType::basicTypePairs(false,'id');
+  $org_id = array_search('Organization',$cType);
+  $sub_type_name = array('Health Insurance Provider','Life Insurance Provider');
+  $orgSubType = CRM_Contact_BAO_ContactType::subTypes('Organization', true);
+  $orgSubType = CRM_Contact_BAO_ContactType::subTypeInfo('Organization');
+  $params['parent_id'] = $org_id;
+  $params['is_active'] = 1;
+
+  if ($org_id) {
+    foreach($sub_type_name as $sub_type_name) {
+      $subTypeName = ucfirst(CRM_Utils_String::munge($sub_type_name));
+      $subID = array_key_exists( $subTypeName, $orgSubType );
+      if (!$subID) {
+        $params['name'] = $subTypeName;
+        $params['label'] = $sub_type_name;
+        CRM_Contact_BAO_ContactType::add($params);
+      }
+      elseif ($subID && $orgSubType[$subTypeName]['is_active']==0) {
+        CRM_Contact_BAO_ContactType::setIsActive($orgSubType[$subTypeName]['id'], 1);
+      }
+    }
+  }
+
+  //Add job import navigation menu
+  $weight = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'Import Contacts', 'weight', 'name');
+  $contactNavId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'Contacts', 'id', 'name');
+
+  $importJobNavigation = new CRM_Core_DAO_Navigation();
+  $params = array (
+    'domain_id'  => CRM_Core_Config::domainID(),
+    'label'      => ts('Import Jobs'),
+    'name'       => 'jobImport',
+    'url'        => null,
+    'parent_id'  => $contactNavId,
+    'weight'     => $weight+1,
+    'permission' => 'access HRJobs',
+    'separator'  => 1,
+    'is_active'  => 1
+  );
+  $importJobNavigation->copyValues($params);
+  $importJobNavigation->save();
+  $importJobMenuTree = array(
+    'label' => ts('Jobs'),
+    'name' => 'jobs',
+    'url'  => 'civicrm/job/import',
+    'permission' => 'access HRJobs',
+    'is_active'  => 1,
+    'parent_id'  => $importJobNavigation->id,
+    'weight'     => 1,
+  );
+  CRM_Core_BAO_Navigation::add($importJobMenuTree);
+  CRM_Core_BAO_Navigation::resetNavigation();
+
   return _hrjob_civix_civicrm_install();
 }
 
@@ -54,6 +107,22 @@ function hrjob_civicrm_install() {
  * Implementation of hook_civicrm_uninstall
  */
 function hrjob_civicrm_uninstall() {
+  $subTypeInfo = CRM_Contact_BAO_ContactType::subTypeInfo('Organization');
+  $sub_type_name = array('Health Insurance Provider','Life Insurance Provider');
+  foreach($sub_type_name as $sub_type_name) {
+    $subTypeName = ucfirst(CRM_Utils_String::munge($sub_type_name));
+    $orid = array_key_exists($subTypeName, $subTypeInfo);
+    if($orid) {
+      $id = $subTypeInfo[$subTypeName]['id'];
+      CRM_Contact_BAO_ContactType::del($id);
+    }
+  }
+
+  //delete job import navigation menu
+  $importJobId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'jobImport', 'id', 'name');
+  CRM_Core_BAO_Navigation::processDelete($importJobId);
+  CRM_Core_BAO_Navigation::resetNavigation();
+
   return _hrjob_civix_civicrm_uninstall();
 }
 
@@ -61,6 +130,9 @@ function hrjob_civicrm_uninstall() {
  * Implementation of hook_civicrm_enable
  */
 function hrjob_civicrm_enable() {
+  CRM_Core_BAO_Navigation::processUpdate(array('name' => 'jobImport'), array('is_active' => 1));
+  CRM_Core_BAO_Navigation::resetNavigation();
+
   return _hrjob_civix_civicrm_enable();
 }
 
@@ -68,6 +140,9 @@ function hrjob_civicrm_enable() {
  * Implementation of hook_civicrm_disable
  */
 function hrjob_civicrm_disable() {
+  CRM_Core_BAO_Navigation::processUpdate(array('name' => 'jobImport'), array('is_active' => 0));
+  CRM_Core_BAO_Navigation::resetNavigation();
+
   return _hrjob_civix_civicrm_disable();
 }
 
@@ -183,7 +258,7 @@ function hrjob_civicrm_entityTypes(&$entityTypes) {
   );
 }
 
-function hrjob_civicrm_triggerInfo(&$info, $tableName) {
+/*function hrjob_civicrm_triggerInfo(&$info, $tableName) {
   $info[] = array(
     'table' => array('civicrm_hrjob'),
     'when' => 'after',
@@ -216,7 +291,7 @@ function hrjob_civicrm_triggerInfo(&$info, $tableName) {
       END IF;
     ",
   );
-}
+}*/
 
 /**
  * Implementation of hook_civicrm_permission
@@ -225,11 +300,12 @@ function hrjob_civicrm_triggerInfo(&$info, $tableName) {
  * @return void
  */
 function hrjob_civicrm_permission(&$permissions) {
-  $prefix = ts('CiviHR') . ': '; // name of extension or module
-  $permissions = array(
+  $prefix = ts('CiviHRJob') . ': '; // name of extension or module
+  $permissions += array(
     'access HRJobs' => $prefix . ts('access HRJobs'),
     'edit HRJobs' => $prefix . ts('edit HRJobs'),
     'delete HRJobs' => $prefix . ts('delete HRJobs'),
+    'access own HRJobs' => $prefix . ts('access own HRJobs'),
   );
 }
 
@@ -243,12 +319,26 @@ function hrjob_civicrm_permission(&$permissions) {
  * @return void
  */
 function hrjob_civicrm_alterAPIPermissions($entity, $action, &$params, &$permissions) {
-  $permissions['h_r_job']['get'] = array('access CiviCRM', 'access HRJobs');
+  $session = CRM_Core_Session::singleton();
+  $cid = $session->get('userID');
+  if($entity == 'h_r_job_leave' &&
+    ( $cid == $params['contact_id'] || $params['api.has_parent'] == 1 ) &&
+    $action == 'get') {
+    $permissions['h_r_job_leave']['get'] = array('access own HRJobs');
+  } else {
+    $permissions['h_r_job_leave']['get'] = array('access HRJobs');
+  }
+
+  if ($entity == 'h_r_job' && $cid == $params['contact_id'] && $action == 'get') {
+    $permissions['h_r_job']['get'] = array('access own HRJobs');
+   } else {
+    $permissions['h_r_job']['get'] = array('access CiviCRM', 'access HRJobs');
+  }
   $permissions['h_r_job']['create'] = array('access CiviCRM', 'edit HRJobs');
   $permissions['h_r_job']['update'] = array('access CiviCRM', 'edit HRJobs');
   $permissions['h_r_job']['duplicate'] = array('access CiviCRM', 'edit HRJobs');
   $permissions['h_r_job']['delete'] = array('access CiviCRM', 'delete HRJobs');
-  $permissions['HRJob'] = $permissions['h_r_job'];
+  $permissions['CiviHRJob'] = $permissions['h_r_job'];
 }
 
 /**
@@ -289,4 +379,36 @@ function _hrjob_phpunit_populateDB() {
     CRM_Extension_System::singleton()->getMapper()->keyToBasePath('org.civicrm.hrjob')
       . '/xml/job_summary_install.xml'
   );
+}
+
+/**
+ * Implementation of hook_civicrm_caseTypes
+ *
+ * Generate a list of case-types
+ *
+ * Note: This hook only runs in CiviCRM 4.4+.
+ *
+ * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_caseTypes
+ */
+function hrjob_civicrm_caseTypes(&$caseTypes) {
+  _hrjob_civix_civicrm_caseTypes($caseTypes);
+}
+
+/**
+ * Implementation of hook_civicrm_alterSettingsFolders
+ *
+ * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_alterSettingsFolders
+ */
+function hrjob_civicrm_alterSettingsFolders(&$metaDataFolders = NULL) {
+  _hrjob_civix_civicrm_alterSettingsFolders($metaDataFolders);
+}
+
+function hrjob_civicrm_pageRun( &$page ) {
+  if ($page instanceof CRM_Contact_Page_View_Summary || $page instanceof CRM_Contact_Page_Inline_CustomData) {
+    $groups = CRM_Core_PseudoConstant::get('CRM_Core_BAO_CustomField', 'custom_group_id', array('labelColumn' => 'name'));
+    $gid = array_search('HRJob_Summary', $groups);
+    CRM_Core_Resources::singleton()->addSetting(array('grID' => $gid,));
+    CRM_Core_Resources::singleton()->addScriptFile('org.civicrm.hrjob', 'js/jobsummary.js');
+    CRM_Core_Resources::singleton()->addScriptFile('org.civicrm.hrjob', 'js/readable-range.js');
+  }
 }

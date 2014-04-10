@@ -238,6 +238,14 @@
     <item>Apprentice</item>
   </contract_type>
 
+ <department>
+    <item>Finance</item>
+    <item>HR</item>
+    <item>IT</item>
+    <item>Fund Raising</item>
+    <item>Marketing </item>
+ </department>
+
   <level_type>
     <item>Senior Manager</item>
     <item>Junior Manager</item>
@@ -250,24 +258,35 @@
     <item>Temporary</item>
   </period_type>
 
-  <provider>
-    <item>Unknown</item>
-  </provider>
-
   <plan_type>
     <item>Family</item>
     <item>Individual</item>
   </plan_type>
+
+  <plan_type_life_insurance>
+    <item>Family</item>
+    <item>Individual</item>
+  </plan_type_life_insurance>
 
   <description>
     <item>Description1</item>
     <item>Description2</item>
   </description>
 
+  <description_life_insurance>
+    <item>LI Description1</item>
+    <item>LI Description2</item>
+  </description_life_insurance>
+
   <dependents>
     <item>dependents1</item>
     <item>dependents2</item>
   </dependents>
+
+  <dependents_life_insurance>
+    <item>LI dependents1</item>
+    <item>LI dependents2</item>
+  </dependents_life_insurance>
 
   <notice_amount>
     <item>1</item>
@@ -306,10 +325,10 @@
   </hours_unit>
 
   <hours_fte>
-    <item>1</item>
-    <item>1.5</item>
-    <item>2</item>
-    <item>3</item>
+    <item>0.5</item>
+    <item>0.75</item>
+    <item>1.0</item>
+    <item>1.1</item>
   </hours_fte>
 
   <pay_amount>
@@ -366,14 +385,6 @@
     <item>desc3</item>
     <item>desc4</item>
   </job_role_description>
-
-  <department>
-    <item>Fundraising</item>
-    <item>Operations</item>
-    <item>Finance</item>
-    <item>HR</item>
-    <item>Advocacy</item>
-  </department>
 
   <location>
     <item>Headquarters</item>
@@ -576,4 +587,45 @@
     <item>Absolutely solid evidence</item>
     <item>Looks like it was printed on an inkjet at home</item>
   </evidence_note>
+
+  <sponsor_certificate_number>
+    <item></item>
+    <item>VT123456</item>
+    <item>AB67564</item>
+  </sponsor_certificate_number>
+
+  <salary>
+    <item>$50-$70k/yr</item>
+    <item>$30-$40k/yr</item>
+    <item>$110-$130k/yr</item>
+  </salary>
+  
+  <vacancyposition>
+    <item>Senior Support Specialist</item>
+    <item>Junior Support Specialist</item>
+    <item>Senior Deletion Confirmation Specialist</item>
+  </vacancyposition>
+
+  <vacancydescription>
+    <item>Answer phone calls and emails from irate customers.</item>
+  </vacancydescription>
+  
+  <benefits>
+    <item>Gym, Sports Club</item>
+    <item>Have a place to park</item>
+    <item>Free Health Care Service</item>
+  </benefits>
+
+  <requirements>
+    <item>Pro-actively looks to build cross discipline experience and increase knowledge through working with other engineers and technicians.</item>
+    <item>Reports progress and technical problems to project and supervisor.</item>
+    <item>You have at least five years of experience managing a complex business across multiple locations.</item>
+  </requirements>
+
+  <permission>
+    <item>view Applicants</item>
+    <item>evaluate Applicants</item>
+    <item>manage Applicants</item>
+    <item>administer Applicants</item>
+  </permission>
 </sample_data>

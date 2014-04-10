@@ -10,7 +10,9 @@ CRM.HRApp.module('JobTabApp.Summary', function(Summary, HRApp, Backbone, Marione
     },
     regions: {
       generalRegion: '.hrjob-summary-general',
+      fundingRegion: '.hrjob-summary-funding',
       healthRegion: '.hrjob-summary-health',
+      lifeRegion: '.hrjob-summary-life',
       hourRegion: '.hrjob-summary-hour',
       leaveRegion: '.hrjob-summary-leave',
       payRegion: '.hrjob-summary-pay',
@@ -25,8 +27,16 @@ CRM.HRApp.module('JobTabApp.Summary', function(Summary, HRApp, Backbone, Marione
       this.generalRegion.show(new HRApp.JobTabApp.General.SummaryView({
         model: models.HRJob.first()
       }));
-      this.healthRegion.show(new Summary.SimpleItemView({
+      this.fundingRegion.show(new HRApp.JobTabApp.Funding.SummaryView({
+          model: models.HRJob.first()
+      }));
+      this.healthRegion.show(new HRApp.JobTabApp.Health.SummaryView({
         template: '#hrjob-health-summary-template',
+        crmEntityName: 'HRJobHealth',
+        model: models.HRJobHealth.first() || new HRApp.Entities.HRJobHealth()
+      }));
+      this.lifeRegion.show(new HRApp.JobTabApp.Health.SummaryView({
+        template: '#hrjob-life-summary-template',
         crmEntityName: 'HRJobHealth',
         model: models.HRJobHealth.first() || new HRApp.Entities.HRJobHealth()
       }));
@@ -38,9 +48,7 @@ CRM.HRApp.module('JobTabApp.Summary', function(Summary, HRApp, Backbone, Marione
       this.leaveRegion.show(new HRApp.JobTabApp.Leave.SummaryView({
         collection: models.HRJobLeave
       }));
-      this.payRegion.show(new Summary.SimpleItemView({
-        template: '#hrjob-pay-summary-template',
-        crmEntityName: 'HRJobPay',
+      this.payRegion.show(new HRApp.JobTabApp.Pay.ShowView({
         model: models.HRJobPay.first() || new HRApp.Entities.HRJobPay()
       }));
       this.pensionRegion.show(new Summary.SimpleItemView({

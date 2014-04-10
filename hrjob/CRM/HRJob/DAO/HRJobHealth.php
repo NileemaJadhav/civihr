@@ -1,7 +1,7 @@
 <?php
 /*
 +--------------------------------------------------------------------+
-| CiviHR version 1.0                                                 |
+| CiviHR version 1.2                                                 |
 +--------------------------------------------------------------------+
 | Copyright CiviCRM LLC (c) 2004-2013                                |
 +--------------------------------------------------------------------+
@@ -24,7 +24,6 @@
 | see the CiviCRM license FAQ at http://civicrm.org/licensing        |
 +--------------------------------------------------------------------+
 */
-
 /**
  *
  * @package CRM
@@ -102,9 +101,9 @@ class CRM_HRJob_DAO_HRJobHealth extends CRM_Core_DAO
    */
   public $job_id;
   /**
-   * The organization or company which manages healthcare service
+   * FK to Contact ID for the organization or company which manages healthcare service
    *
-   * @var string
+   * @var int unsigned
    */
   public $provider;
   /**
@@ -123,6 +122,28 @@ class CRM_HRJob_DAO_HRJobHealth extends CRM_Core_DAO
    * @var text
    */
   public $dependents;
+  /**
+   * FK to Contact ID for the organization or company which manages life insurance service
+   *
+   * @var int unsigned
+   */
+  public $provider_life_insurance;
+  /**
+   * .
+   *
+   * @var enum('Family', 'Individual')
+   */
+  public $plan_type_life_insurance;
+  /**
+   *
+   * @var text
+   */
+  public $description_life_insurance;
+  /**
+   *
+   * @var text
+   */
+  public $dependents_life_insurance;
   /**
    * class constructor
    *
@@ -146,6 +167,8 @@ class CRM_HRJob_DAO_HRJobHealth extends CRM_Core_DAO
     if (!self::$_links) {
       self::$_links = array(
         new CRM_Core_EntityReference(self::getTableName() , 'job_id', 'civicrm_hrjob', 'id') ,
+        new CRM_Core_EntityReference(self::getTableName() , 'provider', 'civicrm_contact', 'id') ,
+        new CRM_Core_EntityReference(self::getTableName() , 'provider_life_insurance', 'civicrm_contact', 'id') ,
       );
     }
     return self::$_links;
@@ -173,23 +196,21 @@ class CRM_HRJob_DAO_HRJobHealth extends CRM_Core_DAO
         ) ,
         'hrjob_health_provider' => array(
           'name' => 'provider',
-          'type' => CRM_Utils_Type::T_STRING,
+          'type' => CRM_Utils_Type::T_INT,
           'title' => ts('Job Healthcare Provider') ,
-          'maxlength' => 63,
-          'size' => CRM_Utils_Type::BIG,
           'export' => true,
+          'import' => true,
           'where' => 'civicrm_hrjob_health.provider',
           'headerPattern' => '',
           'dataPattern' => '',
-          'pseudoconstant' => array(
-            'optionGroupName' => 'hrjob_health_provider',
-          )
+          'FKClassName' => 'CRM_Contact_DAO_Contact',
         ) ,
         'hrjob_health_plan_type' => array(
           'name' => 'plan_type',
           'type' => CRM_Utils_Type::T_ENUM,
           'title' => ts('Job Healthcare Plan') ,
           'export' => true,
+          'import' => true,
           'where' => 'civicrm_hrjob_health.plan_type',
           'headerPattern' => '',
           'dataPattern' => '',
@@ -204,6 +225,38 @@ class CRM_HRJob_DAO_HRJobHealth extends CRM_Core_DAO
           'name' => 'dependents',
           'type' => CRM_Utils_Type::T_TEXT,
           'title' => ts('Dependents') ,
+        ) ,
+        'hrjob_health_provider_life_insurance' => array(
+          'name' => 'provider_life_insurance',
+          'type' => CRM_Utils_Type::T_INT,
+          'title' => ts('Job life insurance Provider') ,
+          'export' => true,
+          'import' => true,
+          'where' => 'civicrm_hrjob_health.provider_life_insurance',
+          'headerPattern' => '',
+          'dataPattern' => '',
+          'FKClassName' => 'CRM_Contact_DAO_Contact',
+        ) ,
+        'hrjob_life_insurance_plan_type' => array(
+          'name' => 'plan_type_life_insurance',
+          'type' => CRM_Utils_Type::T_ENUM,
+          'title' => ts('Job life insurance Plan') ,
+          'export' => true,
+          'import' => true,
+          'where' => 'civicrm_hrjob_health.plan_type_life_insurance',
+          'headerPattern' => '',
+          'dataPattern' => '',
+          'enumValues' => 'Family, Individual',
+        ) ,
+        'description_life_insurance' => array(
+          'name' => 'description_life_insurance',
+          'type' => CRM_Utils_Type::T_TEXT,
+          'title' => ts('Description Life Insurance') ,
+        ) ,
+        'dependents_life_insurance' => array(
+          'name' => 'dependents_life_insurance',
+          'type' => CRM_Utils_Type::T_TEXT,
+          'title' => ts('Dependents Life Insurance') ,
         ) ,
       );
     }
@@ -226,6 +279,10 @@ class CRM_HRJob_DAO_HRJobHealth extends CRM_Core_DAO
         'plan_type' => 'hrjob_health_plan_type',
         'description' => 'description',
         'dependents' => 'dependents',
+        'provider_life_insurance' => 'hrjob_health_provider_life_insurance',
+        'plan_type_life_insurance' => 'hrjob_life_insurance_plan_type',
+        'description_life_insurance' => 'description_life_insurance',
+        'dependents_life_insurance' => 'dependents_life_insurance',
       );
     }
     return self::$_fieldKeys;
@@ -264,7 +321,7 @@ class CRM_HRJob_DAO_HRJobHealth extends CRM_Core_DAO
       self::$_import = array();
       $fields = self::fields();
       foreach($fields as $name => $field) {
-        if (CRM_Utils_Array::value('import', $field)) {
+        if (!empty($field['import'])) {
           if ($prefix) {
             self::$_import['hrjob_health'] = & $fields[$name];
           } else {
@@ -288,7 +345,7 @@ class CRM_HRJob_DAO_HRJobHealth extends CRM_Core_DAO
       self::$_export = array();
       $fields = self::fields();
       foreach($fields as $name => $field) {
-        if (CRM_Utils_Array::value('export', $field)) {
+        if (!empty($field['export'])) {
           if ($prefix) {
             self::$_export['hrjob_health'] = & $fields[$name];
           } else {
@@ -308,6 +365,7 @@ class CRM_HRJob_DAO_HRJobHealth extends CRM_Core_DAO
   {
     static $enums = array(
       'plan_type',
+      'plan_type_life_insurance',
     );
     return $enums;
   }
@@ -325,6 +383,10 @@ class CRM_HRJob_DAO_HRJobHealth extends CRM_Core_DAO
     if (!$translations) {
       $translations = array(
         'plan_type' => array(
+          'Family' => ts('Family') ,
+          'Individual' => ts('Individual') ,
+        ) ,
+        'plan_type_life_insurance' => array(
           'Family' => ts('Family') ,
           'Individual' => ts('Individual') ,
         ) ,

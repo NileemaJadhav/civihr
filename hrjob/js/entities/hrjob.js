@@ -6,8 +6,10 @@ CRM.HRApp.module('Entities', function(Entities, HRApp, Backbone, Marionette, $, 
       position: '',
       title: '',
       is_tied_to_funding: 0,
+      funding_org_id: null,
       funding_notes: '',
       contract_type: null,
+      department: null,
       level_type: null,
       period_type: null,
       period_start_date: '',
@@ -69,7 +71,7 @@ CRM.HRApp.module('Entities', function(Entities, HRApp, Backbone, Marionette, $, 
       description: '',
       hours: 0,
       region: '',
-      department: '',
+      department: null,
       manager_contact_id: null,
       functional_area: '',
       organization: '',
@@ -81,10 +83,14 @@ CRM.HRApp.module('Entities', function(Entities, HRApp, Backbone, Marionette, $, 
   Entities.HRJobHealth = Backbone.Model.extend({
     defaults: {
       job_id: null,
-      provider: '',
+      provider: null,
       plan_type: '',
       description: '',
-      dependents: ''
+      dependents: '',
+      provider_life_insurance: null,
+      plan_type_life_insurance:'',
+      description_life_insurance:'',
+      dependents_life_insurance:''
     }
   });
 
@@ -103,7 +109,10 @@ CRM.HRApp.module('Entities', function(Entities, HRApp, Backbone, Marionette, $, 
       job_id: null,
       pay_grade: '',
       pay_amount: '',
-      pay_unit: ''
+      pay_unit: '',
+      pay_currency: '',
+      pay_annualized_est: '',
+      pay_is_auto_est: 1
     }
   });
 
@@ -112,8 +121,16 @@ CRM.HRApp.module('Entities', function(Entities, HRApp, Backbone, Marionette, $, 
       job_id: null,
       is_enrolled: '',
       er_contrib_pct: '',
-      ee_contrib_pct: ''
+      ee_contrib_pct: '',
+      pension_type:'',
+      ee_contrib_abs: ''
     }
+  });
+
+  Entities.Setting = Backbone.Model.extend({
+    // Restrict returned settings to mitigate risk that concurrent processes CRUD the same setting
+    crmReturn: ['work_months_per_year','work_weeks_per_year','work_days_per_year','work_hours_per_year'],
+    defaults: {}
   });
 
   Entities.HRJobLeave = Backbone.Model.extend({
@@ -161,7 +178,7 @@ CRM.HRApp.module('Entities', function(Entities, HRApp, Backbone, Marionette, $, 
   });
 
   // FIXME real models
-  _.each(['HRJobHealth', 'HRJobHour', 'HRJobLeave', 'HRJobPay', 'HRJobPension', 'HRJobRole'], function(entityName){
+  _.each(['HRJobHealth', 'HRJobHour', 'HRJobLeave', 'HRJobPay', 'HRJobPension', 'HRJobRole', 'Setting'], function(entityName){
     if (!Entities[entityName]) {
       Entities[entityName] = Backbone.Model.extend({});
     }

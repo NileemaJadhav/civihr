@@ -1,7 +1,7 @@
 <?php
 /*
 +--------------------------------------------------------------------+
-| CiviHR version 1.0                                                 |
+| CiviHR version 1.2                                                 |
 +--------------------------------------------------------------------+
 | Copyright CiviCRM LLC (c) 2004-2013                                |
 +--------------------------------------------------------------------+
@@ -137,5 +137,163 @@ class CRM_HRVisa_Upgrader extends CRM_HRVisa_Upgrader_Base {
     }
     return TRUE;
   } // */
+  
+  public function upgrade_1104() {
+    $this->ctx->log->info('Applying update 1104');
+    $groups = CRM_Core_PseudoConstant::get('CRM_Core_BAO_CustomField', 'custom_group_id', array('labelColumn' => 'name'));
+    $cgid = array_search('Immigration', $groups);
+    $cfId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_CustomField', 'Sponsor_Certificate_number', 'id', 'name');
 
+    if($cgid && !$cfId) {
+      $cfparams = array(
+        'custom_group_id' => $cgid,
+        'name' => 'Sponsor_Certificate_number',
+        'label' => 'Sponsor\'s Certificate number',
+        'html_type' => 'Text',
+        'data_type' => 'String',
+        'default_value' => '',
+        'weight' => 34,
+        'is_active' => 1,
+      );
+      $cfresult =CRM_Core_BAO_CustomField::create($cfparams);
+      $cfId = $cfresult->id;
+    }
+    if( $cfId ) {
+      $ufgroups = CRM_Core_PseudoConstant::get('CRM_Core_BAO_UFField', 'uf_group_id', array('labelColumn' => 'name'));
+      $ufid = array_search('hrvisa_tab', $ufgroups);
+      $eufId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_UFField', 'custom_'.$cfId, 'id', 'field_name');
+
+      if(!$eufId && $ufid){
+        $ufparams = array(
+          'field_name' => 'custom_'.$cfId,
+          'field_type' => 'Individual',
+          'visibility' => 'User and User Admin Only',
+          'label' => 'Sponsor\'s Certificate number',
+          'is_searchable' => 0,
+          'is_active' => 0,
+          'uf_group_id' => $ufid,
+          'is_multi_summary' => 1,
+          'is_active'=> 0,
+          'is_required'=> 0,
+          'in_selector'=> 0,
+        );
+        $ufresult = civicrm_api3('uf_field', 'create', $ufparams);
+      }
+    }
+    return TRUE;
+  }
+
+  public function upgrade_1105() {
+    $this->ctx->log->info('Applying update 1105');
+    $groups = CRM_Core_PseudoConstant::get('CRM_Core_BAO_CustomField', 'custom_group_id', array('labelColumn' => 'name'));
+    $customFieldID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_CustomField', 'Is_Visa_Required', 'id', 'name');
+    $customGroupID = array_search('Extended_Demographics', $groups);
+
+    if ($customFieldID && $customGroupID) {
+      CRM_Core_BAO_CustomField::moveField($customFieldID, $customGroupID);
+
+      $result = civicrm_api3('CustomField', 'get', array(
+        'sequential' => 1,
+        'name' => 'Is_Visa_Required',
+      ));
+      $weight = $result['values']['weight'];
+
+      //fix the weight so that the field is next to nationality
+      $fieldValues['custom_group_id'] = $customGroupID;
+      CRM_Utils_Weight::updateOtherWeights('CRM_Core_DAO_CustomField', $weight, 2, $fieldValues);
+
+      $params = array(
+        'sequential' => 1,
+        'id' => $result['id'],
+        'is_active' => 1,
+        'html_type' => 'Radio',
+        'data_type' => 'Boolean',
+        'weight' => 2
+      );
+      $result = civicrm_api3('CustomField', 'create', $params);
+    }
+    return TRUE;
+  }
+
+  public function upgrade_1116() {
+    $this->ctx->log->info('Planning update 1116'); // PEAR Log interface
+    $groups = CRM_Core_PseudoConstant::get('CRM_Core_BAO_UFField', 'uf_group_id', array('labelColumn' => 'name'));
+    $gid = array_search('hrvisa_tab', $groups);
+    $params = array(
+      'action' => 'submit',
+      'profile_id' => $gid,
+    );
+    $result = civicrm_api3('profile', 'getfields', $params);
+    if($result['is_error'] == 0 ) {
+      foreach($result['values'] as $key => $value) {
+        if(isset($value['html_type']) && $value['html_type'] == "File") {
+          CRM_Core_DAO::executeQuery("UPDATE civicrm_uf_field SET is_multi_summary = 1 WHERE civicrm_uf_field.uf_group_id = {$gid} AND civicrm_uf_field.field_name = '{$key}'");
+        }
+      }
+    }
+    return TRUE;
+  }
+
+  public function upgrade_1106() {
+    $this->ctx->log->info('Applying update 1106');
+    // create activity_type 'Visa Expiration'
+    $params = array(
+      'weight' => 1,
+      'label' => 'Visa Expiration',
+      'filter' => 0,
+      'is_active' => 1,
+      'is_default' => 0
+    );
+    $resultActivityType = civicrm_api3('activity_type', 'create', $params);
+
+    if ($resultActivityType['is_error']) {
+      return FALSE;
+    }
+
+    // find all contacts who require visa
+    $cfId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_CustomField', 'Is_Visa_Required', 'id', 'name');
+    $params = array(
+      "custom_{$cfId}" => 1,
+      'return.id' => 1
+    );
+
+    $result = civicrm_api3('contact', 'get', $params);
+    if ($result['count']) {
+      foreach ($result['values'] as $value) {
+        CRM_HRVisa_Activity::sync($value['id']);
+      }
+    }
+
+    // create weekly reminder for Visa Expiration
+    $actionSchedule = civicrm_api3('action_schedule', 'get', array('name' => 'Visa Expiration Reminder'));
+    $activityTypeId =  $resultActivityType['values'][$resultActivityType['id']]['value'];
+    if (empty($actionSchedule['id'])) {
+      $activityContacts = CRM_Core_OptionGroup::values('activity_contacts', FALSE, FALSE, FALSE, NULL, 'name');
+      $targetID = CRM_Utils_Array::key('Activity Targets', $activityContacts);
+
+      $params = array(
+        'name' => 'Visa Expiration Reminder',
+        'title' => 'Visa Expiration Reminder',
+        'recipient' => $targetID,
+        'limit_to' => 1,
+        'entity_value' => $activityTypeId,
+        'entity_status' => CRM_Core_OptionGroup::getValue('activity_status', 'Scheduled', 'name'),
+        'start_action_offset' => 1,
+        'start_action_unit' => 'week',
+        'start_action_condition' => 'before',
+        'start_action_date' => 'activity_date_time',
+        'is_repeat' => 0,
+        'is_active' => 1,
+        'body_html' => '<p>Your latest visa expiries on {activity.activity_date_time}</p>',
+        'subject' => 'Reminder for Visa Expiration',
+        'record_activity' => 1,
+        'mapping_id' => CRM_Core_DAO::getFieldValue('CRM_Core_DAO_ActionMapping', 'activity_type', 'id', 'entity_value')
+      );
+      $result = civicrm_api3('action_schedule', 'create', $params);
+      if ($result['is_error']) {
+        return FALSE;
+      }
+    }
+    return TRUE;
+  }
 }

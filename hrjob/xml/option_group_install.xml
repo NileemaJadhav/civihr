@@ -15,6 +15,12 @@
       <is_active>1</is_active>
     </OptionGroup>
     <OptionGroup>
+      <name>hrjob_department</name>
+      <title>Department</title>
+      <is_reserved>1</is_reserved>
+      <is_active>1</is_active>
+    </OptionGroup>
+    <OptionGroup>
       <name>hrjob_hours_type</name>
       <title>Hours Type</title>
       <is_reserved>1</is_reserved>
@@ -33,14 +39,20 @@
       <is_active>1</is_active>
     </OptionGroup>
     <OptionGroup>
-      <name>hrjob_leave_type</name>
-      <title>Leave Type</title>
+      <name>hrjob_life_provider</name>
+      <title>Life Provider</title>
       <is_reserved>1</is_reserved>
       <is_active>1</is_active>
     </OptionGroup>
     <OptionGroup>
       <name>hrjob_location</name>
       <title>Work Location</title>
+      <is_reserved>1</is_reserved>
+      <is_active>1</is_active>
+    </OptionGroup>
+    <OptionGroup>
+      <name>hrjob_pension_type</name>
+      <title>Pension Type</title>
       <is_reserved>1</is_reserved>
       <is_active>1</is_active>
     </OptionGroup>
@@ -223,37 +235,15 @@
       <option_group_name>hrjob_health_provider</option_group_name>
     </OptionValue>
     <OptionValue>
-      <label>Annual</label>
-      <value>Annual</value>
-      <name>Annual</name>
+      <label>Unknown</label>
+      <value>Unknown</value>
+      <name>Unknown</name>
       <is_default>0</is_default>
       <weight>1</weight>
       <is_optgroup>0</is_optgroup>
       <is_reserved>0</is_reserved>
       <is_active>1</is_active>
-      <option_group_name>hrjob_leave_type</option_group_name>
-    </OptionValue>
-    <OptionValue>
-      <label>Public</label>
-      <value>Public</value>
-      <name>Public</name>
-      <is_default>0</is_default>
-      <weight>2</weight>
-      <is_optgroup>0</is_optgroup>
-      <is_reserved>0</is_reserved>
-      <is_active>1</is_active>
-      <option_group_name>hrjob_leave_type</option_group_name>
-    </OptionValue>
-    <OptionValue>
-      <label>Sick</label>
-      <value>Sick</value>
-      <name>Sick</name>
-      <is_default>0</is_default>
-      <weight>3</weight>
-      <is_optgroup>0</is_optgroup>
-      <is_reserved>0</is_reserved>
-      <is_active>1</is_active>
-      <option_group_name>hrjob_leave_type</option_group_name>
+      <option_group_name>hrjob_life_provider</option_group_name>
     </OptionValue>
     <OptionValue>
       <label>Headquarters</label>
@@ -276,6 +266,83 @@
       <is_reserved>0</is_reserved>
       <is_active>1</is_active>
       <option_group_name>hrjob_location</option_group_name>
+    </OptionValue>
+    <OptionValue>
+      <label>Finance</label>
+      <value>Finance</value>
+      <name>Finance</name>
+      <is_default>0</is_default>
+      <weight>1</weight>
+      <is_optgroup>0</is_optgroup>
+      <is_reserved>0</is_reserved>
+      <is_active>1</is_active>
+      <option_group_name>hrjob_department</option_group_name>
+    </OptionValue>
+    <OptionValue>
+      <label>HR</label>
+      <value>HR</value>
+      <name>HR</name>
+      <is_default>0</is_default>
+      <weight>2</weight>
+      <is_optgroup>0</is_optgroup>
+      <is_reserved>0</is_reserved>
+      <is_active>1</is_active>
+      <option_group_name>hrjob_department</option_group_name>
+    </OptionValue>
+    <OptionValue>
+      <label>IT</label>
+      <value>IT</value>
+      <name>IT</name>
+      <is_default>0</is_default>
+      <weight>3</weight>
+      <is_optgroup>0</is_optgroup>
+      <is_reserved>0</is_reserved>
+      <is_active>1</is_active>
+      <option_group_name>hrjob_department</option_group_name>
+    </OptionValue>
+    <OptionValue>
+      <label>Fundraising</label>
+      <value>Fundraising</value>
+      <name>Fundraising</name>
+      <is_default>0</is_default>
+      <weight>4</weight>
+      <is_optgroup>0</is_optgroup>
+      <is_reserved>0</is_reserved>
+      <is_active>1</is_active>
+      <option_group_name>hrjob_department</option_group_name>
+    </OptionValue>
+    <OptionValue>
+      <label>Marketing</label>
+      <value>Marketing</value>
+      <name>Marketing</name>
+      <is_default>0</is_default>
+      <weight>5</weight>
+      <is_optgroup>0</is_optgroup>
+      <is_reserved>0</is_reserved>
+      <is_active>1</is_active>
+      <option_group_name>hrjob_department</option_group_name>
+    </OptionValue>
+    <OptionValue>
+      <label>Employer Pension</label>
+      <value>Employer Pension</value>
+      <name>Employer Pension </name>
+      <is_default>1</is_default>
+      <weight>1</weight>
+      <is_optgroup>0</is_optgroup>
+      <is_reserved>0</is_reserved>
+      <is_active>1</is_active>
+      <option_group_name>hrjob_pension_type</option_group_name>
+    </OptionValue>
+    <OptionValue>
+      <label>Personal Pension</label>
+      <value>Personal Pension</value>
+      <name>Personal Pension</name>
+      <is_default>0</is_default>
+      <weight>2</weight>
+      <is_optgroup>0</is_optgroup>
+      <is_reserved>0</is_reserved>
+      <is_active>1</is_active>
+      <option_group_name>hrjob_pension_type</option_group_name>
     </OptionValue>
   </OptionValues>
 </CustomData>

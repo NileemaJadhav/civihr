@@ -1,7 +1,7 @@
 <?php
 /*
 +--------------------------------------------------------------------+
-| CiviHR version 1.0                                                 |
+| CiviHR version 1.2                                                 |
 +--------------------------------------------------------------------+
 | Copyright CiviCRM LLC (c) 2004-2013                                |
 +--------------------------------------------------------------------+
@@ -24,7 +24,6 @@
 | see the CiviCRM license FAQ at http://civicrm.org/licensing        |
 +--------------------------------------------------------------------+
 */
-
 /**
  *
  * @package CRM
@@ -180,6 +179,7 @@ class CRM_HRJob_DAO_HRJobHour extends CRM_Core_DAO
           'maxlength' => 63,
           'size' => CRM_Utils_Type::BIG,
           'export' => true,
+          'import' => true,
           'where' => 'civicrm_hrjob_hour.hours_type',
           'headerPattern' => '',
           'dataPattern' => '',
@@ -192,6 +192,7 @@ class CRM_HRJob_DAO_HRJobHour extends CRM_Core_DAO
           'type' => CRM_Utils_Type::T_FLOAT,
           'title' => ts('Job Hours Amount') ,
           'export' => true,
+          'import' => true,
           'where' => 'civicrm_hrjob_hour.hours_amount',
           'headerPattern' => '',
           'dataPattern' => '',
@@ -201,6 +202,7 @@ class CRM_HRJob_DAO_HRJobHour extends CRM_Core_DAO
           'type' => CRM_Utils_Type::T_ENUM,
           'title' => ts('Job Hours Unit') ,
           'export' => true,
+          'import' => true,
           'where' => 'civicrm_hrjob_hour.hours_unit',
           'headerPattern' => '',
           'dataPattern' => '',
@@ -211,6 +213,7 @@ class CRM_HRJob_DAO_HRJobHour extends CRM_Core_DAO
           'type' => CRM_Utils_Type::T_FLOAT,
           'title' => ts('Job Full-Time Equivalence') ,
           'export' => true,
+          'import' => true,
           'where' => 'civicrm_hrjob_hour.hours_fte',
           'headerPattern' => '',
           'dataPattern' => '',
@@ -274,7 +277,7 @@ class CRM_HRJob_DAO_HRJobHour extends CRM_Core_DAO
       self::$_import = array();
       $fields = self::fields();
       foreach($fields as $name => $field) {
-        if (CRM_Utils_Array::value('import', $field)) {
+        if (!empty($field['import'])) {
           if ($prefix) {
             self::$_import['hrjob_hour'] = & $fields[$name];
           } else {
@@ -298,7 +301,7 @@ class CRM_HRJob_DAO_HRJobHour extends CRM_Core_DAO
       self::$_export = array();
       $fields = self::fields();
       foreach($fields as $name => $field) {
-        if (CRM_Utils_Array::value('export', $field)) {
+        if (!empty($field['export'])) {
           if ($prefix) {
             self::$_export['hrjob_hour'] = & $fields[$name];
           } else {

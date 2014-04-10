@@ -16,15 +16,32 @@
       <%= RenderUtil.select({
       id: 'hrjob-pay_grade',
       name: 'pay_grade',
-      options: _.extend({'':''}, FieldOptions.pay_grade)
+      entity: 'HRJobPay'
       }) %>
     {/literal}
+    {include file="CRM/HRJob/Page/EditOptions.tpl" group='hrjob_pay_grade'}
     </div>
   </div>
 
   <div class="crm-summary-row hrjob-needs-pay_grade">
     <div class="crm-label">
-      <label for="hrjob-pay_amount">{ts 1=$config->defaultCurrency}Pay Rate (%1){/ts}</label>
+      <label for="hrjob-pay_amount">{ts}Pay Currency{/ts}</label>
+    </div>
+    <div class="crm-content">
+    {literal}
+      <%= RenderUtil.select({
+      id: 'hrjob-pay_currency',
+      name: 'pay_currency',
+      entity: 'HRJobPay'
+      }) %>
+    {/literal}
+    {include file="CRM/HRJob/Page/EditOptions.tpl" group='currencies_enabled'}
+    </div>
+  </div>
+
+  <div class="crm-summary-row hrjob-needs-pay_grade">
+    <div class="crm-label">
+      <label for="hrjob-pay_amount">{ts}Pay Rate{/ts}</label>
     </div>
     <div class="crm-content">
       <input id="hrjob-pay_amount" name="pay_amount" type="text" />
@@ -33,12 +50,29 @@
       <%= RenderUtil.select({
       id: 'hrjob-pay_unit',
       name: 'pay_unit',
-      options: _.extend({'':''}, FieldOptions.pay_unit)
+      entity: 'HRJobPay'
       }) %>
     {/literal}
     </div>
   </div>
 
+  <div class="crm-summary-row hrjob-needs-pay_grade">
+    <div class="crm-label">
+      <label for="hrjob-pay_annualized_est">{ts}Annual Pay Estimate{/ts}</label>
+    </div>
+    <div class="crm-content">
+      <div>
+        <input id="hrjob-pay_annualized_est" name="pay_annualized_est" type="text" />
+        <input id="hrjob-pay_is_auto_est" name="pay_is_auto_est" type="hidden" />
+      </div>
+      <div>
+        <span class="pay_annualized_est_expl"></span>
+        {if call_user_func(array('CRM_Core_Permission','check'), 'administer CiviCRM') }
+        <span class="batch-edit pay_annualized_est_edit"></span>
+        {/if}
+      </div>
+    </div>
+  </div>
   <%= RenderUtil.standardButtons() %>
 </form>
 </script>

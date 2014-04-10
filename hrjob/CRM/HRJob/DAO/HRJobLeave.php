@@ -1,7 +1,7 @@
 <?php
 /*
 +--------------------------------------------------------------------+
-| CiviHR version 1.0                                                 |
+| CiviHR version 1.2                                                 |
 +--------------------------------------------------------------------+
 | Copyright CiviCRM LLC (c) 2004-2013                                |
 +--------------------------------------------------------------------+
@@ -24,7 +24,6 @@
 | see the CiviCRM license FAQ at http://civicrm.org/licensing        |
 +--------------------------------------------------------------------+
 */
-
 /**
  *
  * @package CRM
@@ -163,12 +162,12 @@ class CRM_HRJob_DAO_HRJobLeave extends CRM_Core_DAO
         ) ,
         'leave_type' => array(
           'name' => 'leave_type',
-          'type' => CRM_Utils_Type::T_STRING,
+          'type' => CRM_Utils_Type::T_INT,
           'title' => ts('Leave Type') ,
-          'maxlength' => 63,
-          'size' => CRM_Utils_Type::BIG,
           'pseudoconstant' => array(
-            'optionGroupName' => 'hrjob_leave_type',
+            'table' => 'civicrm_hrabsence_type',
+            'keyColumn' => 'id',
+            'labelColumn' => 'name',
           )
         ) ,
         'leave_amount' => array(
@@ -233,7 +232,7 @@ class CRM_HRJob_DAO_HRJobLeave extends CRM_Core_DAO
       self::$_import = array();
       $fields = self::fields();
       foreach($fields as $name => $field) {
-        if (CRM_Utils_Array::value('import', $field)) {
+        if (!empty($field['import'])) {
           if ($prefix) {
             self::$_import['hrjob_leave'] = & $fields[$name];
           } else {
@@ -257,7 +256,7 @@ class CRM_HRJob_DAO_HRJobLeave extends CRM_Core_DAO
       self::$_export = array();
       $fields = self::fields();
       foreach($fields as $name => $field) {
-        if (CRM_Utils_Array::value('export', $field)) {
+        if (!empty($field['export'])) {
           if ($prefix) {
             self::$_export['hrjob_leave'] = & $fields[$name];
           } else {

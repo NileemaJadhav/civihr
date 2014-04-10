@@ -1,7 +1,7 @@
 <?php
 /*
 +--------------------------------------------------------------------+
-| CiviHR version 1.0                                                 |
+| CiviHR version 1.2                                                 |
 +--------------------------------------------------------------------+
 | Copyright CiviCRM LLC (c) 2004-2013                                |
 +--------------------------------------------------------------------+
@@ -24,7 +24,6 @@
 | see the CiviCRM license FAQ at http://civicrm.org/licensing        |
 +--------------------------------------------------------------------+
 */
-
 /**
  *
  * @package CRM
@@ -124,6 +123,12 @@ class CRM_HRJob_DAO_HRJob extends CRM_Core_DAO
    */
   public $is_tied_to_funding;
   /**
+   * FK to Contact ID
+   *
+   * @var int unsigned
+   */
+  public $funding_org_id;
+  /**
    *
    * @var text
    */
@@ -211,6 +216,7 @@ class CRM_HRJob_DAO_HRJob extends CRM_Core_DAO
     if (!self::$_links) {
       self::$_links = array(
         new CRM_Core_EntityReference(self::getTableName() , 'contact_id', 'civicrm_contact', 'id') ,
+        new CRM_Core_EntityReference(self::getTableName() , 'funding_org_id', 'civicrm_contact', 'id') ,
         new CRM_Core_EntityReference(self::getTableName() , 'manager_contact_id', 'civicrm_contact', 'id') ,
       );
     }
@@ -231,9 +237,15 @@ class CRM_HRJob_DAO_HRJob extends CRM_Core_DAO
           'type' => CRM_Utils_Type::T_INT,
           'required' => true,
         ) ,
-        'contact_id' => array(
+        'hrjob_contact_id' => array(
           'name' => 'contact_id',
           'type' => CRM_Utils_Type::T_INT,
+          'title' => ts('Contact ID') ,
+          'export' => true,
+          'import' => true,
+          'where' => 'civicrm_hrjob.contact_id',
+          'headerPattern' => '',
+          'dataPattern' => '',
           'FKClassName' => 'CRM_Contact_DAO_Contact',
         ) ,
         'hrjob_position' => array(
@@ -243,6 +255,7 @@ class CRM_HRJob_DAO_HRJob extends CRM_Core_DAO
           'maxlength' => 127,
           'size' => CRM_Utils_Type::HUGE,
           'export' => true,
+          'import' => true,
           'where' => 'civicrm_hrjob.position',
           'headerPattern' => '',
           'dataPattern' => '',
@@ -254,6 +267,7 @@ class CRM_HRJob_DAO_HRJob extends CRM_Core_DAO
           'maxlength' => 127,
           'size' => CRM_Utils_Type::HUGE,
           'export' => true,
+          'import' => true,
           'where' => 'civicrm_hrjob.title',
           'headerPattern' => '',
           'dataPattern' => '',
@@ -265,13 +279,28 @@ class CRM_HRJob_DAO_HRJob extends CRM_Core_DAO
           'maxlength' => 127,
           'size' => CRM_Utils_Type::HUGE,
           'export' => true,
+          'import' => true,
           'where' => 'civicrm_hrjob.department',
           'headerPattern' => '',
           'dataPattern' => '',
+          'pseudoconstant' => array(
+            'optionGroupName' => 'hrjob_department',
+          )
         ) ,
         'is_tied_to_funding' => array(
           'name' => 'is_tied_to_funding',
           'type' => CRM_Utils_Type::T_BOOLEAN,
+        ) ,
+        'hrjob_funding_org_id' => array(
+          'name' => 'funding_org_id',
+          'type' => CRM_Utils_Type::T_INT,
+          'title' => ts('Funding Organization') ,
+          'export' => true,
+          'import' => true,
+          'where' => 'civicrm_hrjob.funding_org_id',
+          'headerPattern' => '',
+          'dataPattern' => '',
+          'FKClassName' => 'CRM_Contact_DAO_Contact',
         ) ,
         'funding_notes' => array(
           'name' => 'funding_notes',
@@ -285,6 +314,7 @@ class CRM_HRJob_DAO_HRJob extends CRM_Core_DAO
           'maxlength' => 63,
           'size' => CRM_Utils_Type::BIG,
           'export' => true,
+          'import' => true,
           'where' => 'civicrm_hrjob.contract_type',
           'headerPattern' => '',
           'dataPattern' => '',
@@ -299,6 +329,7 @@ class CRM_HRJob_DAO_HRJob extends CRM_Core_DAO
           'maxlength' => 63,
           'size' => CRM_Utils_Type::BIG,
           'export' => true,
+          'import' => true,
           'where' => 'civicrm_hrjob.level_type',
           'headerPattern' => '',
           'dataPattern' => '',
@@ -311,6 +342,7 @@ class CRM_HRJob_DAO_HRJob extends CRM_Core_DAO
           'type' => CRM_Utils_Type::T_ENUM,
           'title' => ts('Job Contract Duration') ,
           'export' => true,
+          'import' => true,
           'where' => 'civicrm_hrjob.period_type',
           'headerPattern' => '',
           'dataPattern' => '',
@@ -321,6 +353,7 @@ class CRM_HRJob_DAO_HRJob extends CRM_Core_DAO
           'type' => CRM_Utils_Type::T_DATE,
           'title' => ts('Job Start Date') ,
           'export' => true,
+          'import' => true,
           'where' => 'civicrm_hrjob.period_start_date',
           'headerPattern' => '',
           'dataPattern' => '',
@@ -330,6 +363,7 @@ class CRM_HRJob_DAO_HRJob extends CRM_Core_DAO
           'type' => CRM_Utils_Type::T_DATE,
           'title' => ts('Job End Date') ,
           'export' => true,
+          'import' => true,
           'where' => 'civicrm_hrjob.period_end_date',
           'headerPattern' => '',
           'dataPattern' => '',
@@ -338,11 +372,21 @@ class CRM_HRJob_DAO_HRJob extends CRM_Core_DAO
           'name' => 'notice_amount',
           'type' => CRM_Utils_Type::T_FLOAT,
           'title' => ts('Job Notice Period Amount') ,
+          'export' => true,
+          'import' => true,
+          'where' => 'civicrm_hrjob.notice_amount',
+          'headerPattern' => '',
+          'dataPattern' => '',
         ) ,
         'hrjob_notice_unit' => array(
           'name' => 'notice_unit',
           'type' => CRM_Utils_Type::T_ENUM,
           'title' => ts('Job Notice Period Unit') ,
+          'export' => true,
+          'import' => true,
+          'where' => 'civicrm_hrjob.notice_unit',
+          'headerPattern' => '',
+          'dataPattern' => '',
           'enumValues' => 'Day, Week, Month, Year',
         ) ,
         'hrjob_manager_contact_id' => array(
@@ -350,6 +394,7 @@ class CRM_HRJob_DAO_HRJob extends CRM_Core_DAO
           'type' => CRM_Utils_Type::T_INT,
           'title' => ts('Job Manager ID') ,
           'export' => true,
+          'import' => true,
           'where' => 'civicrm_hrjob.manager_contact_id',
           'headerPattern' => '',
           'dataPattern' => '',
@@ -362,6 +407,7 @@ class CRM_HRJob_DAO_HRJob extends CRM_Core_DAO
           'maxlength' => 127,
           'size' => CRM_Utils_Type::HUGE,
           'export' => true,
+          'import' => true,
           'where' => 'civicrm_hrjob.location',
           'headerPattern' => '',
           'dataPattern' => '',
@@ -374,6 +420,7 @@ class CRM_HRJob_DAO_HRJob extends CRM_Core_DAO
           'type' => CRM_Utils_Type::T_BOOLEAN,
           'title' => ts('Job Is Primary') ,
           'export' => true,
+          'import' => true,
           'where' => 'civicrm_hrjob.is_primary',
           'headerPattern' => '',
           'dataPattern' => '',
@@ -394,11 +441,12 @@ class CRM_HRJob_DAO_HRJob extends CRM_Core_DAO
     if (!(self::$_fieldKeys)) {
       self::$_fieldKeys = array(
         'id' => 'id',
-        'contact_id' => 'contact_id',
+        'contact_id' => 'hrjob_contact_id',
         'position' => 'hrjob_position',
         'title' => 'hrjob_title',
         'department' => 'hrjob_department',
         'is_tied_to_funding' => 'is_tied_to_funding',
+        'funding_org_id' => 'hrjob_funding_org_id',
         'funding_notes' => 'funding_notes',
         'contract_type' => 'hrjob_contract_type',
         'level_type' => 'hrjob_level_type',
@@ -448,7 +496,7 @@ class CRM_HRJob_DAO_HRJob extends CRM_Core_DAO
       self::$_import = array();
       $fields = self::fields();
       foreach($fields as $name => $field) {
-        if (CRM_Utils_Array::value('import', $field)) {
+        if (!empty($field['import'])) {
           if ($prefix) {
             self::$_import['hrjob'] = & $fields[$name];
           } else {
@@ -472,7 +520,7 @@ class CRM_HRJob_DAO_HRJob extends CRM_Core_DAO
       self::$_export = array();
       $fields = self::fields();
       foreach($fields as $name => $field) {
-        if (CRM_Utils_Array::value('export', $field)) {
+        if (!empty($field['export'])) {
           if ($prefix) {
             self::$_export['hrjob'] = & $fields[$name];
           } else {

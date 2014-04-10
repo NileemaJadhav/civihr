@@ -22,6 +22,9 @@
     <name>contact_id</name>
     <type>int unsigned</type>
     <comment>FK to Contact ID</comment>
+    <import>true</import>
+    <title>Contact ID</title>
+    <uniqueName>hrjob_contact_id</uniqueName>
   </field>
   <foreignKey>
     <name>contact_id</name>
@@ -37,6 +40,7 @@
     <comment>Internal name for the job (for HR)</comment>
     <title>Job Position</title>
     <export>true</export>
+    <import>true</import>
     <uniqueName>hrjob_position</uniqueName>
   </field>
   <index>
@@ -51,6 +55,7 @@
     <comment>Negotiated name for the job</comment>
     <title>Job Title</title>
     <export>true</export>
+    <import>true</import>
     <uniqueName>hrjob_title</uniqueName>
   </field>
   <index>
@@ -63,6 +68,10 @@
     <title>Job Department</title>
     <type>varchar</type>
     <length>127</length>
+    <import>true</import>
+    <pseudoconstant>
+      <optionGroupName>hrjob_department</optionGroupName>
+    </pseudoconstant>
     <export>true</export>
     <uniqueName>hrjob_department</uniqueName>
   </field>
@@ -76,6 +85,22 @@
     <type>boolean</type>
     <default>0</default>
   </field>
+
+  <field>
+    <name>funding_org_id</name>
+    <title>Funding Organization</title>
+    <type>int unsigned</type>
+    <comment>FK to Contact ID</comment>
+    <export>true</export>
+    <import>true</import>
+    <uniqueName>hrjob_funding_org_id</uniqueName>
+  </field>
+  <foreignKey>
+    <name>funding_org_id</name>
+    <table>civicrm_contact</table>
+    <key>id</key>
+    <onDelete>SET NULL</onDelete>
+  </foreignKey>
 
   <field>
     <name>funding_notes</name>
@@ -92,6 +117,7 @@
       <optionGroupName>hrjob_contract_type</optionGroupName>
     </pseudoconstant>
     <export>true</export>
+    <import>true</import>
     <uniqueName>hrjob_contract_type</uniqueName>
   </field>
   <index>
@@ -109,6 +135,7 @@
       <optionGroupName>hrjob_level_type</optionGroupName>
     </pseudoconstant>
     <export>true</export>
+    <import>true</import>
     <uniqueName>hrjob_level_type</uniqueName>
   </field>
   <index>
@@ -123,6 +150,7 @@
     <comment>.</comment>
     <title>Job Contract Duration</title>
     <export>true</export>
+    <import>true</import>
     <uniqueName>hrjob_period_type</uniqueName>
   </field>
   <index>
@@ -136,6 +164,7 @@
     <type>date</type>
     <comment>First day of the job</comment>
     <export>true</export>
+    <import>true</import>
     <uniqueName>hrjob_period_start_date</uniqueName>
   </field>
 
@@ -145,6 +174,7 @@
     <type>date</type>
     <comment>Last day of the job</comment>
     <export>true</export>
+    <import>true</import>
     <uniqueName>hrjob_period_end_date</uniqueName>
   </field>
 
@@ -153,6 +183,7 @@
     <title>Job Notice Period Amount</title>
     <type>float</type>
     <default>0</default>
+    <import>true</import>
     <comment>Amount of time allocated for notice period. Number part without the unit e.g 3 in 3 Weeks.</comment>
     <uniqueName>hrjob_notice_amount</uniqueName>
   </field>
@@ -162,6 +193,7 @@
     <title>Job Notice Period Unit</title>
     <type>enum</type>
     <values>Day, Week, Month, Year</values>
+    <import>true</import>
     <comment>Unit of a notice period assigned to a quantity e.g Week in 3 Weeks.</comment>
     <uniqueName>hrjob_notice_unit</uniqueName>
   </field>
@@ -172,6 +204,7 @@
     <type>int unsigned</type>
     <comment>FK to Contact ID</comment>
     <export>true</export>
+    <import>true</import>
     <uniqueName>hrjob_manager_contact_id</uniqueName>
   </field>
   <foreignKey>
@@ -188,6 +221,7 @@
     <length>127</length>
     <comment>Normal place of work</comment>
     <export>true</export>
+    <import>true</import>
     <pseudoconstant>
       <optionGroupName>hrjob_location</optionGroupName>
     </pseudoconstant>
@@ -205,6 +239,7 @@
     <comment>Is this the primary?</comment>
     <title>Job Is Primary</title>
     <export>true</export>
+    <import>true</import>
     <uniqueName>hrjob_is_primary</uniqueName>
   </field>
   <index>

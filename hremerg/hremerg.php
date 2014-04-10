@@ -1,7 +1,7 @@
 <?php
 /*
 +--------------------------------------------------------------------+
-| CiviHR version 1.0                                                 |
+| CiviHR version 1.2                                                 |
 +--------------------------------------------------------------------+
 | Copyright CiviCRM LLC (c) 2004-2013                                |
 +--------------------------------------------------------------------+
@@ -92,4 +92,23 @@ function hremerg_civicrm_upgrade($op, CRM_Queue_Queue $queue = NULL) {
  */
 function hremerg_civicrm_managed(&$entities) {
   return _hremerg_civix_civicrm_managed($entities);
+}
+
+/**
+ * @param string $formName
+ * @param CRM_Core_Form $form
+ */
+function hremerg_civicrm_buildForm($formName, &$form) {
+  if ($formName == 'CRM_Contact_Form_Relationship' && empty($form->_caseId)) {
+    if ($form->elementExists('relationship_type_id') && $form->_contactType == 'Individual') {
+      $relationshipType = civicrm_api3('relationship_type', 'get', array('name_a_b' => 'Emergency Contact'));
+      $select = $form->getElement('relationship_type_id');
+      $select->freeze();
+      $select->setLabel('');
+      $form->getElement('related_contact_id')->setLabel('');
+      if ($form->getAction() & CRM_Core_Action::ADD && !empty($relationshipType['id'])) {
+        $form->setDefaults(array('relationship_type_id' => $relationshipType['id'] . '_a_b'));
+      }
+    }
+  }
 }

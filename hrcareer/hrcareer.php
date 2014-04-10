@@ -1,7 +1,7 @@
 <?php
 /*
 +--------------------------------------------------------------------+
-| CiviHR version 1.0                                                 |
+| CiviHR version 1.2                                                 |
 +--------------------------------------------------------------------+
 | Copyright CiviCRM LLC (c) 2004-2013                                |
 +--------------------------------------------------------------------+
@@ -111,7 +111,6 @@ function hrcareer_civicrm_tabs(&$tabs, $contactID) {
       ));
     }
   }
-  CRM_Core_Resources::singleton()->addStyleFile('org.civicrm.hrcareer', 'css/hrcareer.css');
 }
 
 function hrcareer_getCustomGroupId() {
@@ -129,12 +128,24 @@ function hrcareer_getUFGroupID() {
  */
 function hrcareer_civicrm_buildProfile($name) {
   if ($name == 'hrcareer_tab') {
+    $isDialog = ('multiProfileDialog' == CRM_Utils_Request::retrieve('context', 'String', CRM_Core_DAO::$_nullObject));
+
     // To fix validation alert issue
     $smarty = CRM_Core_Smarty::singleton();
     $smarty->assign('urlIsPublic', FALSE);
 
+    if (! $isDialog) {
+      CRM_Core_Region::instance('profile-form-hrcareer_tab')->add(array(
+        'weight' => -10,
+        'markup' =>
+          '<div class="help">'
+          . ts('Like a CV or resume, Career History records the work and study that a person has undertaken before joining the organization.')
+          . '</div>'
+      ));
+    }
+
     $config = CRM_Core_Config::singleton();
-    if ($config->logging && 'multiProfileDialog' !== CRM_Utils_Request::retrieve('context', 'String', CRM_Core_DAO::$_nullObject)) {
+    if ($config->logging && ! $isDialog) {
       $contactID = CRM_Utils_Request::retrieve('id', 'Positive', $this);
       CRM_Core_Region::instance('profile-form-hrcareer_tab')->add(array(
         'template' => 'CRM/common/logButton.tpl',
@@ -155,5 +166,11 @@ function hrcareer_civicrm_pageRun($page) {
   if ($page instanceof CRM_Contact_Page_View_Summary) {
     CRM_Core_Resources::singleton()
       ->addScriptFile('civicrm', 'js/jquery/jquery.crmRevisionLink.js', CRM_Core_Resources::DEFAULT_WEIGHT, 'html-header');
+    
+    CRM_Core_Resources::singleton()
+      ->addScriptFile('org.civicrm.hrcareer', 'js/hrcareer.js');
+
+    CRM_Core_Resources::singleton()
+      ->addStyleFile('org.civicrm.hrcareer', 'css/hrcareer.css');
   }
 }

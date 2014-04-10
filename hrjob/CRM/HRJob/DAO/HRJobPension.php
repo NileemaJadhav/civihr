@@ -1,7 +1,7 @@
 <?php
 /*
 +--------------------------------------------------------------------+
-| CiviHR version 1.0                                                 |
+| CiviHR version 1.2                                                 |
 +--------------------------------------------------------------------+
 | Copyright CiviCRM LLC (c) 2004-2013                                |
 +--------------------------------------------------------------------+
@@ -24,7 +24,6 @@
 | see the CiviCRM license FAQ at http://civicrm.org/licensing        |
 +--------------------------------------------------------------------+
 */
-
 /**
  *
  * @package CRM
@@ -119,6 +118,24 @@ class CRM_HRJob_DAO_HRJobPension extends CRM_Core_DAO
    */
   public $er_contrib_pct;
   /**
+   * Pension Type
+   *
+   * @var string
+   */
+  public $pension_type;
+  /**
+   * Employer Contribution Absolute Amount
+   *
+   * @var float
+   */
+  public $ee_contrib_abs;
+  /**
+   * Employee evidence note
+   *
+   * @var string
+   */
+  public $ee_evidence_note;
+  /**
    * class constructor
    *
    * @access public
@@ -179,11 +196,53 @@ class CRM_HRJob_DAO_HRJobPension extends CRM_Core_DAO
           'name' => 'ee_contrib_pct',
           'type' => CRM_Utils_Type::T_FLOAT,
           'title' => ts('Employee Contribution Percentage') ,
+          'export' => true,
+          'import' => true,
+          'where' => 'civicrm_hrjob_pension.ee_contrib_pct',
+          'headerPattern' => '',
+          'dataPattern' => '',
         ) ,
         'er_contrib_pct' => array(
           'name' => 'er_contrib_pct',
           'type' => CRM_Utils_Type::T_FLOAT,
           'title' => ts('Employer Contribution Percentage') ,
+          'export' => true,
+          'import' => true,
+          'where' => 'civicrm_hrjob_pension.er_contrib_pct',
+          'headerPattern' => '',
+          'dataPattern' => '',
+        ) ,
+        'hrjob_pension_type' => array(
+          'name' => 'pension_type',
+          'type' => CRM_Utils_Type::T_STRING,
+          'title' => ts('Pension Type') ,
+          'maxlength' => 63,
+          'size' => CRM_Utils_Type::BIG,
+          'export' => true,
+          'import' => true,
+          'where' => 'civicrm_hrjob_pension.pension_type',
+          'headerPattern' => '',
+          'dataPattern' => '',
+          'pseudoconstant' => array(
+            'optionGroupName' => 'hrjob_pension_type',
+          )
+        ) ,
+        'ee_contrib_abs' => array(
+          'name' => 'ee_contrib_abs',
+          'type' => CRM_Utils_Type::T_FLOAT,
+          'title' => ts('Employer Contribution Absolute Amount') ,
+          'export' => true,
+          'import' => true,
+          'where' => 'civicrm_hrjob_pension.ee_contrib_abs',
+          'headerPattern' => '',
+          'dataPattern' => '',
+        ) ,
+        'ee_evidence_note' => array(
+          'name' => 'ee_evidence_note',
+          'type' => CRM_Utils_Type::T_STRING,
+          'title' => ts('Evidence Note') ,
+          'maxlength' => 127,
+          'size' => CRM_Utils_Type::HUGE,
         ) ,
       );
     }
@@ -205,6 +264,9 @@ class CRM_HRJob_DAO_HRJobPension extends CRM_Core_DAO
         'is_enrolled' => 'hrjob_is_enrolled',
         'ee_contrib_pct' => 'ee_contrib_pct',
         'er_contrib_pct' => 'er_contrib_pct',
+        'pension_type' => 'hrjob_pension_type',
+        'ee_contrib_abs' => 'ee_contrib_abs',
+        'ee_evidence_note' => 'ee_evidence_note',
       );
     }
     return self::$_fieldKeys;
@@ -243,7 +305,7 @@ class CRM_HRJob_DAO_HRJobPension extends CRM_Core_DAO
       self::$_import = array();
       $fields = self::fields();
       foreach($fields as $name => $field) {
-        if (CRM_Utils_Array::value('import', $field)) {
+        if (!empty($field['import'])) {
           if ($prefix) {
             self::$_import['hrjob_pension'] = & $fields[$name];
           } else {
@@ -267,7 +329,7 @@ class CRM_HRJob_DAO_HRJobPension extends CRM_Core_DAO
       self::$_export = array();
       $fields = self::fields();
       foreach($fields as $name => $field) {
-        if (CRM_Utils_Array::value('export', $field)) {
+        if (!empty($field['export'])) {
           if ($prefix) {
             self::$_export['hrjob_pension'] = & $fields[$name];
           } else {

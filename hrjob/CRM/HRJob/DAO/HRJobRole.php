@@ -1,7 +1,7 @@
 <?php
 /*
 +--------------------------------------------------------------------+
-| CiviHR version 1.0                                                 |
+| CiviHR version 1.2                                                 |
 +--------------------------------------------------------------------+
 | Copyright CiviCRM LLC (c) 2004-2013                                |
 +--------------------------------------------------------------------+
@@ -24,7 +24,6 @@
 | see the CiviCRM license FAQ at http://civicrm.org/licensing        |
 +--------------------------------------------------------------------+
 */
-
 /**
  *
  * @package CRM
@@ -239,6 +238,9 @@ class CRM_HRJob_DAO_HRJobRole extends CRM_Core_DAO
           'where' => 'civicrm_hrjob_role.department',
           'headerPattern' => '',
           'dataPattern' => '',
+          'pseudoconstant' => array(
+            'optionGroupName' => 'hrjob_department',
+          )
         ) ,
         'manager_contact_id' => array(
           'name' => 'manager_contact_id',
@@ -341,7 +343,7 @@ class CRM_HRJob_DAO_HRJobRole extends CRM_Core_DAO
       self::$_import = array();
       $fields = self::fields();
       foreach($fields as $name => $field) {
-        if (CRM_Utils_Array::value('import', $field)) {
+        if (!empty($field['import'])) {
           if ($prefix) {
             self::$_import['hrjob_role'] = & $fields[$name];
           } else {
@@ -365,7 +367,7 @@ class CRM_HRJob_DAO_HRJobRole extends CRM_Core_DAO
       self::$_export = array();
       $fields = self::fields();
       foreach($fields as $name => $field) {
-        if (CRM_Utils_Array::value('export', $field)) {
+        if (!empty($field['export'])) {
           if ($prefix) {
             self::$_export['hrjob_role'] = & $fields[$name];
           } else {

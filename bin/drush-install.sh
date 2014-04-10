@@ -12,6 +12,7 @@ ENTITY_EXTS=\
 org.civicrm.hrbank,\
 org.civicrm.hrdemog,\
 org.civicrm.hrident,\
+org.civicrm.hrabsence,\
 org.civicrm.hrjob,\
 org.civicrm.hrmed,\
 org.civicrm.hrqual,\
@@ -23,7 +24,12 @@ org.civicrm.hrcareer
 APP_EXTS=\
 org.civicrm.hrreport,\
 org.civicrm.hrui,\
-org.civicrm.hrstaffdir
+org.civicrm.hrcase,\
+org.civicrm.hrstaffdir,\
+org.civicrm.hrim,\
+org.civicrm.hrprofile,\
+org.civicrm.hrcaseutils,\
+org.civicrm.hrrecruitment
 
 ##################################
 ## Main

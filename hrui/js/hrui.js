@@ -1,20 +1,17 @@
 // Copyright CiviCRM LLC 2013. See http://civicrm.org/licensing
-// js to hide current employer and job title from contact view screen
-cj(document).ready(function($) {
-  cj('.crm-contact-current_employer').parent('div.crm-summary-row').hide();
-  cj('.crm-contact-job_title').parent('div.crm-summary-row').hide();
- 
-  //rename "Summary" tab to "Personal Details"
-  $('#tab_summary a').text('Personal Details');  
-});
-// for inline edit
-cj(document).ajaxSuccess(function() {
-  cj('#current_employer').parent('div.crm-content').parent('div.crm-summary-row').hide();
-  cj('#job_title').parent('div.crm-content').parent('div.crm-summary-row').children('div.crm-label').children('label[for="job_title"]').parent().hide();
-  cj('#job_title').parent('div.crm-content').hide();;
-});
-// for contact edit screen
-cj(document).ready(function($) {
-    cj('#current_employer').parent('td').children().remove();
-    cj('#job_title').parent('td').hide();
-});
+(function($) {
+  $(document).on('crmLoad', function(e) {
+    // Rename "Summary" tab to "Personal Details"
+    // Hack to check contact type - This field only appears for individuals
+    if ($('.crm-contact-job_title', '.crm-summary-contactinfo-block').length) {
+      $('.crm-contact-tabs-list #tab_summary a', e.target).text('Personal Details');
+    }
+    // Hide current employer and job title
+    // Contact summary screen:
+    $('div.crm-contact-current_employer, div.crm-contact-job_title', '.crm-summary-contactinfo-block').parent('div.crm-summary-row').hide();
+    // Contact edit screen
+    $('input#employer_id, input#job_title', 'form#Contact').parent('td').hide();
+    // Inline edit form
+    $('form#ContactInfo input#employer_id, form#ContactInfo input#job_title', e.target).closest('div.crm-summary-row').hide();
+  });
+}(cj));

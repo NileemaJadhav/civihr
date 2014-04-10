@@ -1,7 +1,7 @@
 <?php
 /*
 +--------------------------------------------------------------------+
-| CiviHR version 1.0                                                 |
+| CiviHR version 1.2                                                 |
 +--------------------------------------------------------------------+
 | Copyright CiviCRM LLC (c) 2004-2013                                |
 +--------------------------------------------------------------------+
@@ -24,7 +24,6 @@
 | see the CiviCRM license FAQ at http://civicrm.org/licensing        |
 +--------------------------------------------------------------------+
 */
-
 /**
  *
  * @package CRM
@@ -120,6 +119,24 @@ class CRM_HRJob_DAO_HRJobPay extends CRM_Core_DAO
    */
   public $pay_unit;
   /**
+   * Unit for expressing pay currency
+   *
+   * @var string
+   */
+  public $pay_currency;
+  /**
+   * Estimated Annual Pay
+   *
+   * @var float
+   */
+  public $pay_annualized_est;
+  /**
+   * Is the estimate automatically calculated
+   *
+   * @var boolean
+   */
+  public $pay_is_auto_est;
+  /**
    * class constructor
    *
    * @access public
@@ -173,10 +190,11 @@ class CRM_HRJob_DAO_HRJobPay extends CRM_Core_DAO
           'title' => ts('Job Pay Grade') ,
           'maxlength' => 63,
           'size' => CRM_Utils_Type::BIG,
-          'export' => true,
+          'import' => true,
           'where' => 'civicrm_hrjob_pay.pay_grade',
           'headerPattern' => '',
           'dataPattern' => '',
+          'export' => true,
           'pseudoconstant' => array(
             'optionGroupName' => 'hrjob_pay_grade',
           )
@@ -185,20 +203,51 @@ class CRM_HRJob_DAO_HRJobPay extends CRM_Core_DAO
           'name' => 'pay_amount',
           'type' => CRM_Utils_Type::T_MONEY,
           'title' => ts('Job Pay Amount') ,
-          'export' => true,
+          'import' => true,
           'where' => 'civicrm_hrjob_pay.pay_amount',
           'headerPattern' => '',
           'dataPattern' => '',
+          'export' => true,
         ) ,
         'hrjob_pay_unit' => array(
           'name' => 'pay_unit',
           'type' => CRM_Utils_Type::T_ENUM,
           'title' => ts('Job Pay Unit') ,
-          'export' => true,
+          'import' => true,
           'where' => 'civicrm_hrjob_pay.pay_unit',
           'headerPattern' => '',
           'dataPattern' => '',
+          'export' => true,
           'enumValues' => 'Hour, Day, Week, Month, Year',
+        ) ,
+        'hrjob_pay_currency' => array(
+          'name' => 'pay_currency',
+          'type' => CRM_Utils_Type::T_STRING,
+          'title' => ts('Job Pay Currency') ,
+          'maxlength' => 63,
+          'size' => CRM_Utils_Type::BIG,
+          'import' => true,
+          'where' => 'civicrm_hrjob_pay.pay_currency',
+          'headerPattern' => '',
+          'dataPattern' => '',
+          'export' => true,
+          'pseudoconstant' => array(
+            'optionGroupName' => 'currencies_enabled',
+          )
+        ) ,
+        'hrjob_pay_annualized_est' => array(
+          'name' => 'pay_annualized_est',
+          'type' => CRM_Utils_Type::T_MONEY,
+          'title' => ts('Estimated Annual Pay') ,
+          'export' => true,
+          'where' => 'civicrm_hrjob_pay.pay_annualized_est',
+          'headerPattern' => '',
+          'dataPattern' => '',
+        ) ,
+        'pay_is_auto_est' => array(
+          'name' => 'pay_is_auto_est',
+          'type' => CRM_Utils_Type::T_BOOLEAN,
+          'default' => '1',
         ) ,
       );
     }
@@ -220,6 +269,9 @@ class CRM_HRJob_DAO_HRJobPay extends CRM_Core_DAO
         'pay_grade' => 'hrjob_pay_grade',
         'pay_amount' => 'hrjob_pay_amount',
         'pay_unit' => 'hrjob_pay_unit',
+        'pay_currency' => 'hrjob_pay_currency',
+        'pay_annualized_est' => 'hrjob_pay_annualized_est',
+        'pay_is_auto_est' => 'pay_is_auto_est',
       );
     }
     return self::$_fieldKeys;

@@ -1,7 +1,7 @@
 <?php
 /*
 +--------------------------------------------------------------------+
-| CiviHR version 1.0                                                 |
+| CiviHR version 1.2                                                 |
 +--------------------------------------------------------------------+
 | Copyright CiviCRM LLC (c) 2004-2013                                |
 +--------------------------------------------------------------------+
@@ -136,5 +136,43 @@ class CRM_HRCareer_Upgrader extends CRM_HRCareer_Upgrader_Base {
     }
     return TRUE;
   } // */
-
+  
+  public function upgrade_1102() {
+    $this->ctx->log->info('Planning update 1102'); // PEAR Log interface
+    $groups = CRM_Core_PseudoConstant::get('CRM_Core_BAO_CustomField', 'custom_group_id', array('labelColumn' => 'name'));
+    $cgid = array_search('Career', $groups);
+    $params = array(
+      'custom_group_id' => $cgid,
+      'name' => 'Reference_Supplied',
+    );
+    $cfid = $customFields['id']; 
+    if ( $cgid ) {
+      CRM_Core_DAO::executeQuery("UPDATE civicrm_custom_field SET label = 'Reference Supplied By' WHERE civicrm_custom_field.name = 'Reference_Supplied' AND civicrm_custom_field.custom_group_id = {$cgid}");
+    }
+    $groups = CRM_Core_PseudoConstant::get('CRM_Core_BAO_UFField', 'uf_group_id', array('labelColumn' => 'name'));
+    $ufid = array_search('hrcareer_tab', $groups);
+    if ($ufid) {
+      CRM_Core_DAO::executeQuery("UPDATE civicrm_uf_field SET label = 'Reference Supplied By' WHERE civicrm_uf_field.field_name = 'custom_{$cfid}' AND civicrm_uf_field.uf_group_id = {$ufid}");
+    }
+    return TRUE;
+    }
+  
+  public function upgrade_1112() {
+    $this->ctx->log->info('Planning update 1112'); // PEAR Log interface
+    $groups = CRM_Core_PseudoConstant::get('CRM_Core_BAO_UFField', 'uf_group_id', array('labelColumn' => 'name'));
+    $gid = array_search('hrcareer_tab', $groups);
+    $params = array(
+      'action' => 'submit',
+      'profile_id' => $gid,
+    );
+    $result = civicrm_api3('profile', 'getfields', $params);
+    if($result['is_error'] == 0 ) {
+      foreach($result['values'] as $key => $value) {
+        if(isset($value['html_type']) && $value['html_type'] == "File") {
+          CRM_Core_DAO::executeQuery("UPDATE civicrm_uf_field SET is_multi_summary = 1 WHERE civicrm_uf_field.uf_group_id = {$gid} AND civicrm_uf_field.field_name = '{$key}'");
+        }
+      }
+    }
+    return TRUE;
+  }
 }

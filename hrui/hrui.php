@@ -1,7 +1,7 @@
 <?php
 /*
 +--------------------------------------------------------------------+
-| CiviHR version 1.0                                                 |
+| CiviHR version 1.2                                                 |
 +--------------------------------------------------------------------+
 | Copyright CiviCRM LLC (c) 2004-2013                                |
 +--------------------------------------------------------------------+
@@ -64,11 +64,11 @@ function hrui_civicrm_xmlMenu(&$files) {
  * Implementation of hook_civicrm_install
  */
 function hrui_civicrm_install() {
-  // make sure only relevant components are enabled 
+  // make sure only relevant components are enabled
   $params = array(
     'version' => 3,
     'domain_id' => CRM_Core_Config::domainID(),
-    'enable_components' => array('CiviReport'),
+    'enable_components' => array('CiviReport','CiviCase'),
   );
   $result = civicrm_api('setting', 'create', $params);
   if (CRM_Utils_Array::value('is_error', $result, FALSE)) {
@@ -97,7 +97,7 @@ function hrui_civicrm_install() {
     }
   }
 
-  // Delete unnecessary reports 
+  // Delete unnecessary reports
   $reports = array("Constituent Summary", "Constituent Detail", "Current Employers");
   if (!empty($reports)) {
     foreach ($reports as $reportTitle) {
@@ -158,6 +158,28 @@ function hrui_civicrm_install() {
     }
   }
 
+  //hide communication preferences block
+  $groupID = CRM_Core_DAO::getFieldValue(
+    'CRM_Core_DAO_OptionGroup',
+    'contact_edit_options',
+    'id',
+    'name'
+  );
+
+  $params = array(
+    'option_group_id' => $groupID,
+    'name' => 'CommunicationPreferences',
+  );
+
+  CRM_Core_BAO_OptionValue::retrieve($params, $defaults);
+  $defaults['is_active'] = 0;
+  CRM_Core_BAO_OptionValue::create($defaults);
+
+  // Change the blog URL
+  civicrm_api3('setting', 'create', array(
+    'blogUrl' => 'https://civicrm.org/taxonomy/term/198/feed',
+  ));
+
   return _hrui_civix_civicrm_install();
 }
 
@@ -180,6 +202,23 @@ function hrui_civicrm_uninstall() {
 
   // set modified options in the DB
   hrui_setViewOptionsSetting($options);
+
+  // show communication preferences block
+  $groupID = CRM_Core_DAO::getFieldValue(
+    'CRM_Core_DAO_OptionGroup',
+    'contact_edit_options',
+    'id',
+    'name'
+  );
+
+  $params = array(
+    'option_group_id' => $groupID,
+    'name' => 'CommunicationPreferences',
+  );
+
+  CRM_Core_BAO_OptionValue::retrieve($params, $defaults);
+  $defaults['is_active'] = 1;
+  CRM_Core_BAO_OptionValue::create($defaults);
 
   return _hrui_civix_civicrm_uninstall();
 }
@@ -251,10 +290,11 @@ function hrui_civicrm_upgrade($op, CRM_Queue_Queue $queue = NULL) {
  * Implementation of hook_civicrm_tabs
  */
 function hrui_civicrm_tabs(&$tabs, $contactID) {
-  $count = count($tabs);
-  for ($i = 0; $i < $count; $i++) {
-    if ($tabs[$i]['id'] != 'log') {
-      $tab[$i] = $tabs[$i]['title'];
+  $newTabs = array();
+
+  foreach ($tabs as $i => $tab) {
+    if ($tab['id'] != 'log') {
+      $newTabs[$i] = $tab['title'];
     }
     else {
       $changeLogTabID = $i;
@@ -262,10 +302,10 @@ function hrui_civicrm_tabs(&$tabs, $contactID) {
   }
 
   //sort alphabetically
-  asort($tab);
+  asort($newTabs);
   $weight = 0;
   //assign the weights based on alphabetic order
-  foreach ($tab as $key => $value) {
+  foreach ($newTabs as $key => $value) {
     $weight += 10;
     $tabs[$key]['weight'] = $weight;
   }
@@ -282,4 +322,47 @@ function hrui_civicrm_tabs(&$tabs, $contactID) {
  */
 function hrui_civicrm_managed(&$entities) {
   return _hrui_civix_civicrm_managed($entities);
+}
+
+function hrui_civicrm_navigationMenu( &$params ) {
+  $maxKey = ( max( array_keys($params) ) );
+  $contactNavId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'Contacts', 'id', 'name');
+  $i = 1;
+  // Degrade gracefully on 4.4
+  if (is_callable(array('CRM_Core_BAO_CustomGroup', 'getMultipleFieldGroup'))) {
+    //  Get the maximum key of $params
+    $multipleCustomData = CRM_Core_BAO_CustomGroup::getMultipleFieldGroup();
+    foreach ($multipleCustomData as $key => $value) {
+      $i++;
+      $i = $maxKey + $i;
+      $multiValuedData[$i] = array (
+        'attributes' => array (
+          'label'      => $value,
+          'name'       => $value,
+          'url'        => 'civicrm/import/custom?reset=1&id='.$key,
+          'permission' => 'access HRJobs',
+          'operator'   => null,
+          'separator'  => null,
+          'parentID'   => $maxKey+1,
+          'navID'      => $i,
+          'active'     => 1
+        ),
+        'child' => null
+      );
+    }
+    $params[$contactNavId]['child'][$maxKey+1] = array (
+      'attributes' => array (
+        'label'      => 'Import Multi-value Custom Data' ,
+        'name'       => 'multiValueCustomDataImport',
+        'url'        => 'civicrm/import/custom',
+        'permission' => 'access HRJobs',
+        'operator'   => null,
+        'separator'  => null,
+        'parentID'   => $contactNavId,
+        'navID'      => $maxKey+1,
+        'active'     => 1
+      ),
+      'child' => $multiValuedData,
+    );
+  }
 }

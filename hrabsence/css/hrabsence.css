@@ -1,0 +1,206 @@
+.hrabsence-toolbar {
+    width: 100%;
+}
+
+.hrabsence-new-region {
+    width: 32%;
+    background: #CDE8FE;
+    padding: 0.8em;
+    min-height: 3em;
+}
+
+.hrabsence-filter-region {
+    width: 65%;
+    background: #CDE8FE;
+    padding: 0.8em;
+    float: right;
+    min-height: 3em;
+}
+
+.hrabsence-tabs-region {
+    width: 15%;
+    padding: 0.8em 0.8em 0.8em 0;
+    margin: 1em 1em 1em 0;
+}
+
+.hrabsence-tabs-region .highlight {
+    font-weight: bold;
+    background-color: #FFFFFF;
+}
+
+.hrabsence-tabs-region ul {
+    list-style: none !important;
+    margin-top: 3.2em !important;
+}
+
+.hrabsence-tabs-region ul li{
+    border-style: solid;
+    border-width: 1px;
+    padding-left: 0.8em;
+    margin-bottom: 0.4em;
+    background-color: #CCCCCC;
+}
+
+.hrabsence-tabs-region ul li a{
+    cursor: pointer;
+    text-decoration: none;
+    color: #1B1B1B;
+}
+
+.hrabsence-content-region {
+    width: 85%;
+    min-height: 15em;
+    border: 1px solid black;
+    padding: 0.8em 0 0.8em 0;
+    margin-top: 1em;
+    float: right;
+    z-index: 1;
+    background-color: #FFFFFF;
+}
+
+.hrabsence-calendar-chart {
+    width: 98%;
+    border: 1px solid black;
+    padding: 0.8em;
+    margin: 1em;
+    float: left;
+}
+
+.hrabsence-calendar-chart table th{
+    border: 1px solid #f4f4f4;
+    text-align: center;
+}
+
+.hrabsence-list-entitlement, .hrabsence-list-balance {
+    font-weight: bold;
+}
+
+.hrabsence-list-item:nth-child(odd) {
+    background: #f4f4f4;
+}
+
+.hrabsence-list-item:nth-child(even) {
+    background: #fafafa;
+}
+
+.hrabsence-container button.ui-multiselect {
+    border: 1px solid #999999;
+    padding: 1px;
+}
+
+.page-civicrm-absences .ui-multiselect-menu, .page-civicrm-contact-view .ui-multiselect-menu{
+    padding: 1px !important;
+}
+
+.page-civicrm-absences .ui-multiselect-menu ul, .page-civicrm-contact-view .ui-multiselect-menu ul {
+    background-color: #F2F1F0 !important;
+}
+
+.page-civicrm-absences .ui-multiselect-menu li label span, .page-civicrm-contact-view .ui-multiselect-menu li label span{
+    padding-left: 4px;
+    font-weight: normal !important;
+}
+
+/* **** Calendar - Main Table **** */
+
+.hrabsence-calendar { background: white; color: black; }
+.hrabsence-calendar td, .hrabsence-calendar th, .hrabsence-calendar-chart td { text-align: center; }
+
+.hrabsence-calendar td,  .hrabsence-calendar-chart td { border: 1px solid #f4f4f4; }
+
+/* **** Calendar - Legend **** */
+
+.hrabsence-legend { background: white; color: black; }
+.hrabsence-legend h4 { width: 98%; text-align: center; }
+.hrabsence-legend table { width: 98%; padding: 0.5em; margin: auto; }
+.hrabsence-legend table td { margin: auto; text-align: center; }
+
+/* *** Calendar - Shared by main table and legend *** */
+
+td.hrabsence-cal-item,
+td.hrabsence-cal-item a:link,
+td.hrabsence-cal-item a:visited,
+td.hrabsence-cal-item a:hover
+{
+    color:  white;
+}
+
+td.hrabsence-cal-chart-item a:link,
+td.hrabsence-cal-chart-item a:visited,
+td.hrabsence-cal-chart-item a:hover
+{
+    color:  white;
+}
+
+td.hrabsence-cal-item.hrabsence-bg-6-debit,
+td.hrabsence-cal-item.hrabsence-bg-6-debit a:link,
+td.hrabsence-cal-item.hrabsence-bg-6-debit a:visited,
+td.hrabsence-cal-item.hrabsence-bg-6-debit a:hover
+{
+    color:  black;
+}
+
+.hrabsence-bg-empty { }
+.hrabsence-bg-mixed { background: #000000; color: white; }
+
+.hrabsence-bg-0-debit { background: #bb0000; }
+.hrabsence-bg-0-credit { background: #880000;  }
+
+.hrabsence-bg-1-debit { background: #0000bb; color:white; }
+.hrabsence-bg-1-credit { background: #000088; color:white; }
+
+.hrabsence-bg-2-debit { background: #00bb00;  }
+.hrabsence-bg-2-credit { background: #008800; }
+
+.hrabsence-bg-3-debit { background: #cccc00;  }
+.hrabsence-bg-3-credit { background: #aaaa00; }
+
+.hrabsence-bg-4-debit { background: #ee00ee;}
+.hrabsence-bg-4-credit { background: #880088;  }
+
+.hrabsence-bg-5-debit { background: #6666ff; }
+.hrabsence-bg-5-credit { background: #6666aa; }
+
+.hrabsence-bg-6-debit { background: #88ff88; }
+.hrabsence-bg-6-credit { background: #88dd88; }
+
+.hrabsence-bg-7-debit { background: #00bbbb; }
+.hrabsence-bg-7-credit { background: #008888; }
+
+.hrabsence-bg-8-debit { background: #888800; }
+.hrabsence-bg-8-credit { background: #444400; }
+
+.hrabsence-cal-total .credit { color: #0a0; }
+.hrabsence-cal-total .debit { color: #a00; }
+
+/* Absence view page */
+.page-civicrm-absence-set .crm-container table.absencedetail tbody tr td:first-child {
+    font-weight: bold;
+} 
+
+.page-civicrm-absence-set .crm-container table#tblabsence tbody tr:last-child{
+    font-weight: bold;
+}
+.page-civicrm-absence-set .crm-container table#tblabsence tbody tr:first-child{
+    background-color: #D3D3D3;
+}
+
+.page-civicrm-absence-set .crm-container table {
+    width:70% !important;
+} 
+
+.page-civicrm-absence-set #tabs-wrapper h1 {
+    display: none;
+}
+
+.page-civicrm-absence-set #commentDisplay {
+    font-style:italic;
+}
+
+.page-civicrm-absence-set .tblabsencetitle, .page-civicrm-absence-set .abempInfo tbody tr td:first-child {
+    font-weight: bold;
+}
+
+.page-civicrm-absence-set table.abempInfo tr td:last-child, .page-civicrm-absence-set table.absencedetail tr td:last-child {
+    border-right:none;
+} 

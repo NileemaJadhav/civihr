@@ -29,7 +29,7 @@
 
     <div class="crm-summary-row">
       <div class="crm-label">
-        <label for="hrjob-cost_center">{ts}Cost Center{/ts}</label>
+        <label for="hrjob-cost_center">{ts}Cost Center{/ts}&nbsp;{help id='hrjob-cost-center' file='CRM/HRJob/Page/helptext'}</label>
       </div>
       <div class="crm-content">
         <input id="hrjob-cost_center" name="cost_center"/>
@@ -41,7 +41,14 @@
         <label for="hrjob-department">{ts}Department{/ts}</label>
       </div>
       <div class="crm-content">
-        <input id="hrjob-department" name="department"/>
+      {literal}
+        <%= RenderUtil.select({
+        id: 'hrjob-department',
+        name: 'department',
+        entity: 'HRJobRole'
+        }) %>
+      {/literal}
+      {include file="CRM/HRJob/Page/EditOptions.tpl" group='hrjob_department'}
       </div>
     </div>
 
@@ -63,9 +70,10 @@
         <%= RenderUtil.select({
         id: 'hrjob-location',
         name: 'location',
-        options: _.extend({'':''}, FieldOptions.location)
+        entity: 'HRJobRole'
         }) %>
       {/literal}
+      {include file="CRM/HRJob/Page/EditOptions.tpl" group='hrjob_location'}
       </div>
     </div>
 
@@ -74,7 +82,7 @@
         <label for="hrjob-manager_contact_id">{ts}Manager{/ts}</label>
       </div>
       <div class="crm-content">
-        <input id="hrjob-manager_contact_id" name="manager_contact_id" class="crm-contact-selector" />
+        <input id="hrjob-manager_contact_id" name="manager_contact_id" class="crm-form-entityref" data-api-params='{literal}{"params":{"contact_type":"Individual"}}{/literal}' placeholder="{ts}- select -{/ts}" />
       </div>
     </div>
 

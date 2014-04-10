@@ -22,6 +22,7 @@ CREATE TABLE `civicrm_hrjob` (
      `title` varchar(127)    COMMENT 'Negotiated name for the job',
      `department` varchar(127)    ,
      `is_tied_to_funding` tinyint   DEFAULT 0 ,
+     `funding_org_id` int unsigned    COMMENT 'FK to Contact ID',
      `funding_notes` text    ,
      `contract_type` varchar(63)    COMMENT 'Contract for employment, internship, etc.',
      `level_type` varchar(63)    COMMENT 'Junior manager, senior manager, etc.',
@@ -58,7 +59,7 @@ CREATE TABLE `civicrm_hrjob` (
         is_primary
   )
   
-,          CONSTRAINT FK_civicrm_hrjob_contact_id FOREIGN KEY (`contact_id`) REFERENCES `civicrm_contact`(`id`) ON DELETE CASCADE,          CONSTRAINT FK_civicrm_hrjob_manager_contact_id FOREIGN KEY (`manager_contact_id`) REFERENCES `civicrm_contact`(`id`) ON DELETE SET NULL  
+,          CONSTRAINT FK_civicrm_hrjob_contact_id FOREIGN KEY (`contact_id`) REFERENCES `civicrm_contact`(`id`) ON DELETE CASCADE,          CONSTRAINT FK_civicrm_hrjob_manager_contact_id FOREIGN KEY (`manager_contact_id`) REFERENCES `civicrm_contact`(`id`) ON DELETE SET NULL, CONSTRAINT `FK_civicrm_hrjob_funding_org_id` FOREIGN KEY (`funding_org_id`)  REFERENCES `civicrm_contact`(`id`) ON DELETE SET NULL
 )  ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci  ;
 
 -- /*******************************************************
@@ -75,7 +76,10 @@ CREATE TABLE `civicrm_hrjob_pay` (
      `job_id` int unsigned NOT NULL   COMMENT 'FK to Job',
      `pay_grade` varchar(63)    COMMENT 'Paid, Unpaid, etc',
      `pay_amount` decimal(20,2)   DEFAULT 0 COMMENT 'Amount of currency paid for each unit of work (eg 40 per hour, 400 per day)',
-     `pay_unit` enum('Hour', 'Day', 'Week', 'Month', 'Year')    COMMENT 'Unit for expressing pay rate (e.g. amount per hour, amount per week)' 
+     `pay_unit` enum('Hour', 'Day', 'Week', 'Month', 'Year')    COMMENT 'Unit for expressing pay rate (e.g. amount per hour, amount per week)',
+     `pay_currency` varchar(63)    COMMENT 'Unit for expressing pay currency',
+     `pay_annualized_est` decimal(20,2)   DEFAULT 0 COMMENT 'Estimated Annual Pay',
+     `pay_is_auto_est` tinyint   DEFAULT 1 COMMENT 'Is the estimate automatically calculated'
 ,
     PRIMARY KEY ( `id` )
  
@@ -101,10 +105,14 @@ CREATE TABLE `civicrm_hrjob_health` (
 
      `id` int unsigned NOT NULL AUTO_INCREMENT  COMMENT 'Unique HRJobHealth ID',
      `job_id` int unsigned NOT NULL   COMMENT 'FK to Job',
-     `provider` varchar(63)    COMMENT 'The organization or company which manages healthcare service',
+     `provider` int unsigned    COMMENT 'FK to Contact ID for the organization or company which manages healthcare service',
      `plan_type` enum('Family', 'Individual')    COMMENT '.',
      `description` text    ,
-     `dependents` text     
+     `dependents` text,
+     `provider_life_insurance` int unsigned    COMMENT 'FK to Contact ID for the organization or company which manages life insurance service',
+     `plan_type_life_insurance` enum('Family', 'Individual')    COMMENT '.',
+     `description_life_insurance` text,
+     `dependents_life_insurance` text 
 ,
     PRIMARY KEY ( `id` )
  
@@ -116,9 +124,15 @@ CREATE TABLE `civicrm_hrjob_health` (
   )
   ,     INDEX `index_plan_type`(
         plan_type
+  ) 
+  ,     INDEX `index_provider_life_insurance`(
+        provider_life_insurance
+  )
+  ,     INDEX `index_plan_type_life_insurance`(
+        plan_type_life_insurance
   )
   
-,          CONSTRAINT FK_civicrm_hrjob_health_job_id FOREIGN KEY (`job_id`) REFERENCES `civicrm_hrjob`(`id`) ON DELETE CASCADE  
+,          CONSTRAINT FK_civicrm_hrjob_health_job_id FOREIGN KEY (`job_id`) REFERENCES `civicrm_hrjob`(`id`) ON DELETE CASCADE, CONSTRAINT `FK_civicrm_hrjob_health_provider` FOREIGN KEY (`provider`)  REFERENCES `civicrm_contact`(`id`) ON DELETE SET NULL, CONSTRAINT `FK_civicrm_hrjob_health_provider_life_insurance` FOREIGN KEY (`provider_life_insurance`)  REFERENCES `civicrm_contact`(`id`) ON DELETE SET NULL  
 )  ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci  ;
 
 -- /*******************************************************
@@ -162,7 +176,7 @@ CREATE TABLE `civicrm_hrjob_leave` (
 
      `id` int unsigned NOT NULL AUTO_INCREMENT  COMMENT 'Unique HRJobLeave ID',
      `job_id` int unsigned NOT NULL   COMMENT 'FK to Job',
-     `leave_type` varchar(63)    COMMENT 'The purpose for which leave may be taken (sickness, vacation, etc)',
+     `leave_type` int unsigned    COMMENT 'The purpose for which leave may be taken (sickness, vacation, etc)',
      `leave_amount` int unsigned    COMMENT 'The number of leave days' 
 ,
     PRIMARY KEY ( `id` )
@@ -189,7 +203,10 @@ CREATE TABLE `civicrm_hrjob_pension` (
      `job_id` int unsigned NOT NULL   COMMENT 'FK to Job',
      `is_enrolled` tinyint   DEFAULT 0 ,
      `ee_contrib_pct` double   DEFAULT 0 COMMENT 'Employee Contribution Percentage', 
-     `er_contrib_pct` double   DEFAULT 0 COMMENT 'Employer Contribution Percentage' 
+     `er_contrib_pct` double   DEFAULT 0 COMMENT 'Employer Contribution Percentage',
+     `pension_type` varchar(63) COMMENT 'Pension Type',
+     `ee_contrib_abs` decimal(20,2)   DEFAULT 0 COMMENT 'Employee Contribution Absolute Amount',
+     `ee_evidence_note` varchar(127)   COMMENT 'Employee evidence note'
 ,
     PRIMARY KEY ( `id` )
  

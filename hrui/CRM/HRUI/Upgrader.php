@@ -1,7 +1,7 @@
 <?php
 /*
 +--------------------------------------------------------------------+
-| CiviHR version 1.0                                                 |
+| CiviHR version 1.2                                                 |
 +--------------------------------------------------------------------+
 | Copyright CiviCRM LLC (c) 2004-2013                                |
 +--------------------------------------------------------------------+
@@ -59,6 +59,21 @@ class CRM_HRUI_Upgrader extends CRM_HRUI_Upgrader_Base {
    *
   public function disable() {
     CRM_Core_DAO::executeQuery('UPDATE foo SET is_active = 0 WHERE bar = "whiz"');
+  }
+   */
+
+  /**
+   * Change the URL of the blog feed on the dashboard
+   *
+   * @return TRUE on success
+   * @throws Exception
+   */
+  public function upgrade_4400() {
+    civicrm_api3('setting', 'create', array(
+      'version' => 3,
+      'blogUrl' => 'https://civicrm.org/taxonomy/term/198/feed',
+    ));
+    return TRUE;
   }
 
   /**

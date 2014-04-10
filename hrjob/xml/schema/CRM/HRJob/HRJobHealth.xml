@@ -39,19 +39,18 @@
   <field>
     <name>provider</name>
     <title>Job Healthcare Provider</title>
-    <type>varchar</type>
-    <length>63</length>
-    <comment>The organization or company which manages healthcare service</comment>
-    <pseudoconstant>
-      <optionGroupName>hrjob_health_provider</optionGroupName>
-    </pseudoconstant>
+    <type>int unsigned</type>
+    <comment>FK to Contact ID for the organization or company which manages healthcare service</comment>
     <export>true</export>
+    <import>true</import>
     <uniqueName>hrjob_health_provider</uniqueName>
   </field>
-  <index>
-    <name>index_provider</name>
-    <fieldName>provider</fieldName>
-  </index>
+  <foreignKey>
+    <name>provider</name>
+    <table>civicrm_contact</table>
+    <key>id</key>
+    <onDelete>SET NULL</onDelete>
+  </foreignKey>
 
   <field>
     <name>plan_type</name>
@@ -60,6 +59,7 @@
     <values>Family, Individual</values>
     <comment>.</comment>
     <export>true</export>
+    <import>true</import>
     <uniqueName>hrjob_health_plan_type</uniqueName>
   </field>
   <index>
@@ -74,6 +74,47 @@
 
   <field>
     <name>dependents</name>
+    <type>text</type>
+  </field>
+
+  <field>
+    <name>provider_life_insurance</name>
+    <title>Job life insurance Provider</title>
+    <type>int unsigned</type>
+    <comment>FK to Contact ID for the organization or company which manages life insurance service</comment>
+    <export>true</export>
+    <import>true</import>
+    <uniqueName>hrjob_health_provider_life_insurance</uniqueName>
+  </field>
+  <foreignKey>
+    <name>provider_life_insurance</name>
+    <table>civicrm_contact</table>
+    <key>id</key>
+    <onDelete>SET NULL</onDelete>
+  </foreignKey>
+
+  <field>
+    <name>plan_type_life_insurance</name>
+    <title>Job life insurance Plan</title>
+    <type>enum</type>
+    <values>Family, Individual</values>
+    <comment>.</comment>
+    <export>true</export>
+    <import>true</import>
+    <uniqueName>hrjob_life_insurance_plan_type</uniqueName>
+  </field>
+  <index>
+    <name>index_plan_type_life_insurance</name>
+    <fieldName>plan_type_life_insurance</fieldName>
+  </index>
+
+  <field>
+    <name>description_life_insurance</name>
+    <type>text</type>
+  </field>
+
+  <field>
+    <name>dependents_life_insurance</name>
     <type>text</type>
   </field>
 </table>
