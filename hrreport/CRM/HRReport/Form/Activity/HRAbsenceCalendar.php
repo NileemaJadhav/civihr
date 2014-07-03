@@ -3,7 +3,7 @@
 
 /*
  +--------------------------------------------------------------------+
- | CiviHR version 1.3                                                 |
+ | CiviHR version 1.4                                                 |
  +--------------------------------------------------------------------+
  | Copyright CiviCRM LLC (c) 2004-2014                                |
  +--------------------------------------------------------------------+
@@ -407,6 +407,12 @@ activity_type_id = {$activityTypeID}
     //assigning the start_day and end_day to corrosponding month in our absenceCalender array
     $absenceCalendar[date('Y', strtotime($durationFromDate))][(int)date('m', strtotime($durationFromDate))]['actual_start_day'] = (int)date('d', strtotime($durationFromDate));
     $absenceCalendar[date('Y', strtotime($durationToDate))][(int)date('m', strtotime($durationToDate))]['actual_end_day'] = (int)date('d', strtotime($durationToDate));
+
+    foreach ($absenceCalendar as $key=>$val ) {
+      krsort($val);
+      $absenceCalendar[$key] = $val;
+    }
+    krsort($absenceCalendar);
 
     if (count($validSourceRecordIds) == 0 || !$validSourceRecordIds) {
       CRM_Core_Session::setStatus(ts("There is no absence record for chosen Absence Date range"), ts('No Result Found'));

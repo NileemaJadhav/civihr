@@ -1,7 +1,7 @@
 <?php
 /*
 +--------------------------------------------------------------------+
-| CiviHR version 1.3                                                 |
+| CiviHR version 1.4                                                 |
 +--------------------------------------------------------------------+
 | Copyright CiviCRM LLC (c) 2004-2014                                |
 +--------------------------------------------------------------------+
@@ -164,6 +164,22 @@ class CRM_HRReport_Upgrader extends CRM_HRReport_Upgrader_Base {
     return TRUE;
   }
 
+  public function upgrade_1400() {
+    $this->ctx->log->info('Planning update 1400'); // PEAR Log interface
+    $sql = "SELECT * FROM  civicrm_managed WHERE  entity_type = 'ReportInstance' AND name IN ('CiviHR FTE Report', 'CiviHR Annual and Monthly Cost Equivalents Report', 'CiviHR Public Holiday Report','CiviHR Absence Report') ";
+    $dao = CRM_Core_DAO::executeQuery($sql);
+    while ($dao->fetch()) {
+      $url = "civicrm/report/instance/{$dao->entity_id}?reset=1&section=2&snippet=5&context=dashlet";
+      $fullscreen_url = "civicrm/report/instance/{$dao->entity_id}?reset=1&section=2&snippet=5&context=dashletFullscreen";
+      $name = "report/{$dao->entity_id}";
+      $label = $dao->name;
+      $domain_id = CRM_Core_Config::domainID();
+      $query = " INSERT INTO civicrm_dashboard ( domain_id,url, fullscreen_url, is_active, name,label) VALUES ($domain_id,'{$url}', '{$fullscreen_url}', 1, '{$name}', '{$label}' )";
+      CRM_Core_DAO::executeQuery($query);
+    }
+    return TRUE;
+  }
+
   public function upgrade_1401() {
     $this->ctx->log->info('Planning update 1401'); // PEAR Log interface
     $params = array(
@@ -184,6 +200,26 @@ class CRM_HRReport_Upgrader extends CRM_HRReport_Upgrader_Base {
     );
     $result = civicrm_api3('ReportInstance', 'create', $params);
     CRM_Core_DAO::executeQuery("INSERT INTO civicrm_managed (module, name, entity_type, entity_id) VALUES ('org.civicrm.hrreport', 'CiviHR Current Employees Report', 'ReportInstance', {$result['id']})");
+
+    //Set approved filter ON for Absence report
+    $activityStatus = CRM_HRAbsence_BAO_HRAbsenceType::getActivityStatus();
+    $update_formValues = serialize(
+      array(
+        'addToDashboard' => 1,
+        'fields' => array(
+          'id'  => 1,
+          'contact_target' => 1,
+          'activity_type_id' => 1,
+          'duration' => 1,
+          'absence_date' => 1,
+          'status_id' => 1,
+          'this.month' => 1,
+        ),
+        'status_id_op' => 'in',
+        'status_id_value' => array(array_search('Approved', $activityStatus)),
+      ));
+    CRM_Core_DAO::executeQuery("UPDATE civicrm_report_instance SET form_values = '{$update_formValues}' WHERE id = (SELECT entity_id from civicrm_managed where name = 'CiviHR Absence Report')");
+
     return TRUE;
   }
 }

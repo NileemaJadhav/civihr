@@ -3,7 +3,7 @@
 
 /*
  +--------------------------------------------------------------------+
- | CiviHR version 1.3                                                 |
+ | CiviHR version 1.4                                                 |
  +--------------------------------------------------------------------+
  | Copyright CiviCRM LLC (c) 2004-2014                                |
  +--------------------------------------------------------------------+
@@ -669,6 +669,11 @@ GROUP BY civicrm_activity_id {$this->_having} {$this->_orderBy}";
       $viewLinks = TRUE;
       $onHover = ts('View Contact Summary for this Contact');
       $onHoverAct = ts('View Absence Record');
+    }
+
+    if (!isset($this->_params['absence_date_from']) && !isset($this->_params['absence_date_to'])) {
+      $this->_params['absence_date_from'] = date('m/d/Y');
+      $this->_params['absence_date_to'] = date("m/d/Y",strtotime("+2 months"));
     }
 
     if (!empty($rows)) {
