@@ -152,6 +152,8 @@ class CRM_HRJob_Page_JobsTab extends CRM_Core_Page {
         'location',
         'department',
         'level_type'
+        'role_hours_unit',
+        'region'
       ),
     );
     $fieldOptions = array();

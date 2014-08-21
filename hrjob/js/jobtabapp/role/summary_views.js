@@ -44,17 +44,24 @@ CRM.HRApp.module('JobTabApp.Role', function(Role, HRApp, Backbone, Marionette, $
       };
     },
     modelEvents: {
-      'change:manager_contact_id': 'renderManagerContact'
+      'change:manager_contact_id': 'renderManagerContact',
+      'change:funder': 'renderFunder'
     },
     initialize: function() {
       CRM.HRApp.Common.mbind(this);
     },
     onRender: function() {
       this.renderManagerContact();
+      this.renderFunder();
     },
     renderManagerContact: function() {
       this.$('a.hrjob-manager_contact').hrContactLink({
         cid: this.model.get('manager_contact_id')
+      });
+    },
+    renderFunder: function() {
+      this.$('a.hrjob-funder').hrContactLink({
+        cid: this.model.get('funder')
       });
     }
   });

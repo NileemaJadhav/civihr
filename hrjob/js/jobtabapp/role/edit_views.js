@@ -84,7 +84,8 @@ CRM.HRApp.module('JobTabApp.Role', function(Role, HRApp, Backbone, Marionette, $
     events: {
       'click .hrjob-role-add': 'doAdd',
       'click .standard-save': 'doSave',
-      'click .standard-reset': 'doReset'
+      'click .standard-reset': 'doReset',
+      //'click .hrjob-funder-add' : 'doAddFunder'
     },
     initialize: function() {
       this.listenTo(HRApp, 'navigate:warnings', this.onNavigateWarnings);
@@ -102,7 +103,16 @@ CRM.HRApp.module('JobTabApp.Role', function(Role, HRApp, Backbone, Marionette, $
     },
     appendHtml: function(collectionView, itemView, index) {
       collectionView.$('tr.hrjob-role-final').before(itemView.el);
-    },
+    },/*
+    doAddFunder: function(e) {
+      e.stopPropagation();
+	console.log(e);
+	var i =  Math.floor((Math.random() * 10) + 1);
+	console.log(i);
+
+      return false;
+
+    },*/
     doAdd: function(e) {
       e.stopPropagation();
       var model = new CRM.HRApp.Entities.HRJobRole(
