@@ -6,6 +6,8 @@
     <tr>
       <th style="width: 2em;"></th>
       <th>{ts}Role{/ts}</th>
+      <th style="width: 5em;">{ts}Total Pay{/ts}</th>
+      <th style="width: 10em;">{ts}Pay Amount Assigned{/ts}</th>
       <th style="width: 5em;">{ts}Hours{/ts}</th>
     </tr>
     </thead>

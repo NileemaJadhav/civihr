@@ -65,6 +65,37 @@ CRM.HRApp.module('JobTabApp.Role', function(Role, HRApp, Backbone, Marionette, $
     },
     onRender: function() {
       $(this.$el).trigger('crmLoad');
+      var payCollection = new CRM.HRApp.Entities.HRJobPayCollection([], {
+        crmCriteria: {contact_id: CRM.jobTabApp.contact_id, job_id: this.model.get('job_id')},
+      });
+      payCollection.fetch({
+        success: function(e) {
+          var pay = payCollection.first(),
+	    payS = 0;
+          if (pay && pay.get("pay_grade") == "paid" ) {
+	    payS = pay.get("pay_currency")+' '+pay.get("pay_amount")+' per '+pay.get("pay_unit");
+	  $('input[name="total_pay_currency"]').val(pay.get("pay_currency"));
+	  $('input[name="total_pay_amount"]').val(pay.get("pay_amount"));
+	  $('input[name="total_pay_unit"]').val(pay.get("pay_unit"));
+	  }
+	  $('input[name="total_pay"]').val(payS);
+        },
+      });
+
+      var $percent = this.$('[name=actual_amount]');
+      var $pay = this.$('[name=title]');
+      if($position.val() === $title.val()) {
+        $position.bind("keyup", function() {
+          $title.val($position.val());
+          $title.change();
+        });
+        $title.bind("change", function() {
+          if($position.val() !== $title.val()) {
+            $position.unbind("keyup");
+          }
+        });
+      }
+
     },
     onShow: function() {
       $(this.$el).trigger('crmLoad');

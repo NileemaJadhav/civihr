@@ -44,12 +44,30 @@
       </div>
     </div>
 
-    <div class="crm-summary-row hrjob-needs-pay_grade">
+    <div class="crm-summary-row">
+      <div class="crm-label">
+        <label for="hrjob-total_pay">{ts}Total Pay{/ts}</label>
+      </div>
+      <div class="crm-content">
+        <input id="hrjob-total_pay" name="total_pay" size="15" type="text" disabled="true"/>
+      </div>
+    </div>
+
+    <div class="crm-summary-row">
       <div class="crm-label">
         <label for="hrjob-percent_pay_role">{ts}Percent of Pay Assigned to this Role{/ts}</label>
       </div>
       <div class="crm-content">
         <input id="hrjob-percent_pay_role" name="percent_pay_role" size="15" type="float" /> %
+      </div>
+    </div>
+
+    <div class="crm-summary-row">
+      <div class="crm-label">
+        <label for="hrjob-Actual_amount">{ts}Pay assigned to this role{/ts}</label>
+      </div>
+      <div class="crm-content">
+        <span id="hrjob-actual_amount" name="actual_amount" size="15" type="float" >  </span>
       </div>
     </div>
 

@@ -16,23 +16,25 @@ CRM.HRApp.module('JobTabApp.Role', function(Role, HRApp, Backbone, Marionette, $
         crmCriteria: {contact_id: cid, job_id: jobId},
       });
       hourCollection.fetch({reset: true});
+
       roleCollection.fetch({
         success: function() {
           HRApp.trigger('ui:unblock');
-          var job = jobCollection.first(),
+            var job = jobCollection.first(), payS = 0,
             hourUnit = null,
             hourAmount = null;
 	  if (hourCollection.first()) {
-           hourUnit = hourCollection.first().get("hours_unit");
-           hourAmount = hourCollection.first().get("hours_amount");
+            hourUnit = hourCollection.first().get("hours_unit");
+            hourAmount = hourCollection.first().get("hours_amount");
 	  }
+
           var mainView = new Role.TableView({
             newModelDefaults: {
               job_id: jobId,
               title: job.get("position"),
               location: job.get("location"),
               hours: hourAmount,
-              role_hours_unit: hourUnit
+              role_hours_unit: hourUnit,
             },
             collection: roleCollection
           });
