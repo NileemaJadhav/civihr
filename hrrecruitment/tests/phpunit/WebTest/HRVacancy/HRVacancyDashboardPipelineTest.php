@@ -250,7 +250,7 @@ class WebTest_HRVacancy_HRVacancyDashboardPipelineTest extends CiviSeleniumTestC
   function  _commonFollowup() {
     $followup = "Comment";
     $this->select("followup_activity_type_id", "label={$followup}");
-    $this->webtestFillDate('followup_date', '+1 week 1 day 8 hours ');
+    $this->webtestFillDateTime('followup_date', '+1 week 1 day 8 hours ');
     $this->type("followup_activity_subject", "Its testing of follow up activity");
   }
 
